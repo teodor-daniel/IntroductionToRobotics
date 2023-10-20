@@ -3,7 +3,8 @@ Hey there, in my third year at the Faculty of Mathematics and Computer Science, 
 # Table of Contents
 📝 Homework 1: (TBA) this will contain
 
-Homework 1 task:
-Image of the final design:
-Code explination:
-Video:
+## Homework 1
+[Task](#task)
+[Image of the Final Design]
+[Code File]
+[Video]
