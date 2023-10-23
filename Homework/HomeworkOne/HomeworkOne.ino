@@ -31,7 +31,7 @@ void loop() {
   int greenPotValue = analogRead(greenPotPin);
   int bluePotValue = analogRead(bluePotPin);
 
-// map the values,
+// maping the values
   redValue = map(redPotValue, analogMin, analogMax, pwmMin, pwmMax);
   greenValue = map(greenPotValue, analogMin, analogMax, pwmMin, pwmMax);
   blueValue = map(bluePotValue, analogMin, analogMax, pwmMin, pwmMax);
