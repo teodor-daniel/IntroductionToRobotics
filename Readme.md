@@ -8,6 +8,6 @@ Hey there, in my third year at the Faculty of Mathematics and Computer Science, 
 ### Image of the Final Design:
 ![FinalBuild](https://github.com/teodor-daniel1234/IntroductionToRobotics/assets/115356255/1f94e546-3e48-4903-871d-683c1cfb83f1)
 
-### File: 
+### File: https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkOne/HomeworkOne.ino
 
-### Video
+### Video: 
