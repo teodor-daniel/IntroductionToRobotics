@@ -3,7 +3,7 @@
 Hey there, in my third year at the Faculty of Mathematics and Computer Science, University of Bucharest, I've been diving deep into the world of Robotics 🚀. Our coursework involves hands-on laboratory and assignments with intricate specifications. We get to work with real-world challenges, which is not only educational but also genuinely interesting.
 
 ## Table of Contents
-- 📝 Homework 1: This assignment focuses on controlling each channel (Red, Green, and Blue) of an RGB LED using individual potentiometers.
+- 📝 Homework 1: This assignment focuses on controlling each channel (Red, Green, and Blue) of an RGB LED using individual potentiometers. (This is still a work in progress. I might provide an anchor to the existing content instead of linking to the directory.)
    📂 - [File location](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkOne)
 
 ## 💡 Homework 1
