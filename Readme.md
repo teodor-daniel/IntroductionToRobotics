@@ -29,7 +29,7 @@ This assignment involves simulating a 3-floor elevator control system using
 LEDs, buttons, and a buzzer with Arduino.
 
 ### 📷Image of the Final Design:
-![FinalBuild](https://github.com/teodor-daniel1234/IntroductionToRobotics/assets/115356255/1f94e546-3e48-4903-871d-683c1cfb83f1)
+![FinalBuild][(https://github.com/teodor-daniel1234/IntroductionToRobotics/assets/115356255/1f94e546-3e48-4903-871d-683c1cfb83f1)](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkTwo/FinalDesignElevator.jpeg)
 
 ### ⚙️Code:
 - [SourceCode.ino](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkOne/HomeworkOne.ino)
