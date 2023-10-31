@@ -6,8 +6,8 @@ Hey there, in my third year at the Faculty of Mathematics and Computer Science, 
 - 📝 Homework 1: This assignment focuses on controlling each channel (Red, Green, and Blue) of an RGB LED using individual potentiometers. (This is still a work in progress. I might provide an anchor to the existing content instead of linking to the directory.)
    📂 - [File location](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkOne)
   
--📝This project involves creating a simulation of a three-floor elevator control system using Arduino, which includes the integration of LEDs, buttons, and a buzzer. It's akin to simulating the operation of an elevator.
-   📂 -
+- 📝This project involves creating a simulation of a three-floor elevator control system using Arduino, which includes the integration of LEDs, buttons, and a buzzer. It's akin to simulating the operation of an elevator.
+   📂 - [File location](https://github.com/teodor-daniel1234/IntroductionToRobotics/tree/main/Homework/HomeworkTwo)
 
 
 ## 💡 Homework 1
