@@ -13,7 +13,7 @@ const int pinX = A0;
 const int pinY = A1;
 
 const int segSize = 8;
-bool commonAnode = false;  
+bool commonAnode = false;
 byte state = HIGH;
 byte dpState = LOW;
 byte swState = LOW;
@@ -46,11 +46,11 @@ void setup() {
   if (commonAnode == true) {
     state = !state;
   }
+  attachInterrupt(digitalPinToInterrupt(pinSW), switchInterrupt, FALLING);
 }
 
 void loop() {
   //De refacut
-  delay(200);
 
   swState = digitalRead(pinSW);
   if (swState == LOW && lastSwState == HIGH) {
@@ -82,14 +82,19 @@ void loop() {
   handleJoystickLeft(startValue, displayOn, joyMoved);
 
   // IN DREAPTA
-  handleJoystickYRIGHT(startValue, displayOn, joyMoved);
+  handleJoystickYRight(startValue, displayOn, joyMoved);
 
   // Check if the joystick is back to the neutral position in Y direction
   if (yValue >= minThreshold && yValue <= maxThreshold) {
     joyMoved = false;
   }
 }
-
+void switchInterrupt() {
+  // This function is called when the switch is pressed
+  swState = LOW;
+  // Button was pressed, toggle the display state
+  displayOn = !displayOn;
+}
 void handleJoystickTop(int &startValue, bool &displayOn, bool &joyMoved) {
   if (xValue > maxThreshold && joyMoved == false) {
     switch (startValue) {
