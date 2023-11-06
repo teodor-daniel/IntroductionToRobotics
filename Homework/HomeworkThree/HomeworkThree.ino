@@ -29,7 +29,7 @@ int segments[segSize] = {
   // 0      1     2     3     4     5     6   7
   pinA, pinB, pinC, pinD, pinE, pinF, pinG, pinDP
 };
-int stateSegments[segSize] = { 1, 1, 1, 1, 1, 1, 1, 1 };
+int stateSegments[segSize] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 
 int xValue;
@@ -102,24 +102,24 @@ void loop() {
     yValue = analogRead(pinY);
 
     if (xValue < minThreshold && joyMoved == false && joyReturned) {
-      handleJoystickBot(startValue, displayOn);
+      handleJoystickBot(startValue, displayOn, stateSegments);
       joyMoved = true;
       joyReturned = false;
     }
 
     if (xValue > maxThreshold && joyMoved == false && joyReturned) {
-      handleJoystickTop(startValue, displayOn);
+      handleJoystickTop(startValue, displayOn, stateSegments);
       joyMoved = true;
       joyReturned = false;
     }
 
     if (yValue < minThreshold && joyMoved == false && joyReturned) {
-      handleJoystickLeft(startValue, displayOn, stateSegments, wasPressed);
+      handleJoystickLeft(startValue, displayOn, stateSegments);
       joyMoved = true;
       joyReturned = false;
     }
     if (yValue > maxThreshold && joyMoved == false && joyReturned) {
-      handleJoystickYRight(startValue, displayOn, wasPressed);
+      handleJoystickYRight(startValue, displayOn, stateSegments);
       joyMoved = true;
       joyReturned = false;
     }
@@ -144,129 +144,297 @@ void pause300() {
     previousMillis2 = currentMillis;
   }
 }
-void handleJoystickTop(int &startValue, bool &displayOn) {
+void handleJoystickTop(int &startValue, bool &displayOn, int stateSegments[]) {
   if (xValue > maxThreshold && joyMoved == false) {
     switch (startValue) {
       case pinC:
-      case pinE:
-        digitalWrite(startValue, displayOn);
-        displayOn = LOW;
+        if (displayOn == HIGH) {
+          stateSegments[2]++;
+        }
+        if (stateSegments[2] % 2 != 0) {
+          digitalWrite(startValue, HIGH);
+        } else if (stateSegments[2] % 2 == 0) {
+          digitalWrite(startValue, LOW);
+        }
         startValue = pinG;
+        displayOn = LOW;
+        break;
+      case pinE:
+
+        if (displayOn == HIGH) {
+          stateSegments[4]++;
+        }
+        if (stateSegments[4] % 2 != 0) {
+          digitalWrite(startValue, HIGH);
+        } else if (stateSegments[4] % 2 == 0) {
+          digitalWrite(startValue, LOW);
+        }
+        startValue = pinG;
+        displayOn = LOW;
+
         break;
       case pinD:
-        digitalWrite(startValue, displayOn);
-        displayOn = LOW;
+        if (displayOn == HIGH) {
+          stateSegments[3]++;
+        }
+        if (stateSegments[3] % 2 != 0) {
+          digitalWrite(startValue, HIGH);
+        } else if (stateSegments[3] % 2 == 0) {
+          digitalWrite(startValue, LOW);
+        }
         startValue = pinG;
+        displayOn = LOW;
         break;
       case pinG:
-        digitalWrite(startValue, displayOn);
-        displayOn = LOW;
+        if (displayOn == HIGH) {
+          stateSegments[6]++;
+        }
+        if (stateSegments[6] % 2 != 0) {
+          digitalWrite(startValue, HIGH);
+        } else if (stateSegments[6] % 2 == 0) {
+          digitalWrite(startValue, LOW);
+        }
         startValue = pinA;
         break;
       case pinF:
+        if (displayOn == HIGH) {
+          stateSegments[5]++;
+        }
+        if (stateSegments[5] % 2 != 0) {
+          digitalWrite(startValue, HIGH);
+        } else if (stateSegments[5] % 2 == 0) {
+          digitalWrite(startValue, LOW);
+        }
+        startValue = pinA;
+        break;
       case pinB:
-        digitalWrite(startValue, displayOn);
-        displayOn = LOW;
+        if (displayOn == HIGH) {
+          stateSegments[1]++;
+        }
+        if (stateSegments[1] % 2 != 0) {
+          digitalWrite(startValue, HIGH);
+        } else if (stateSegments[1] % 2 == 0) {
+          digitalWrite(startValue, LOW);
+        }
         startValue = pinA;
         break;
     }
   }
 }
 
-void handleJoystickBot(int &startValue, bool &displayOn) {
+void handleJoystickBot(int &startValue, bool &displayOn, int stateSegments[]) {
   if (xValue < minThreshold && joyMoved == false) {
     switch (startValue) {
       case pinG:
-        digitalWrite(startValue, displayOn);
-        displayOn = LOW;
+        if (displayOn == HIGH) {
+          stateSegments[6]++;
+        }
+        if (stateSegments[6] % 2 != 0) {
+          digitalWrite(startValue, HIGH);
+        } else if (stateSegments[6] % 2 == 0) {
+          digitalWrite(startValue, LOW);
+        }
         startValue = pinD;
+        displayOn = LOW;
+
         break;
       case pinC:
-      case pinE:
-        digitalWrite(startValue, displayOn);
-        displayOn = LOW;
+        if (displayOn == HIGH) {
+          stateSegments[2]++;
+        }
+        if (stateSegments[2] % 2 != 0) {
+          digitalWrite(startValue, HIGH);
+        } else if (stateSegments[2] % 2 == 0) {
+          digitalWrite(startValue, LOW);
+        }
         startValue = pinD;
+        displayOn = LOW;
+        break;
+      case pinE:
+        if (displayOn == HIGH) {
+          stateSegments[4]++;
+        }
+        if (stateSegments[4] % 2 != 0) {
+          digitalWrite(startValue, HIGH);
+        } else if (stateSegments[4] % 2 == 0) {
+          digitalWrite(startValue, LOW);
+        }
+        startValue = pinD;
+        displayOn = LOW;
         break;
       case pinB:
-      case pinF:
-        digitalWrite(startValue, displayOn);
-        displayOn = LOW;
+        if (displayOn == HIGH) {
+          stateSegments[1]++;
+        }
+        if (stateSegments[1] % 2 != 0) {
+          digitalWrite(startValue, HIGH);
+        } else if (stateSegments[1] % 2 == 0) {
+          digitalWrite(startValue, LOW);
+        }
         startValue = pinG;
+        displayOn = LOW;
         break;
-      case pinA:
-        digitalWrite(startValue, displayOn);
-        displayOn = LOW;
+      case pinF:
+        if (displayOn == HIGH) {
+          stateSegments[5]++;
+        }
+        if (stateSegments[5] % 2 != 0) {
+          digitalWrite(startValue, HIGH);
+        } else if (stateSegments[5] % 2 == 0) {
+          digitalWrite(startValue, LOW);
+        }
         startValue = pinG;
+        displayOn = LOW;
+      case pinA:
+        if (displayOn == HIGH) {
+          stateSegments[0]++;
+        }
+        if (stateSegments[0] % 2 != 0) {
+          digitalWrite(startValue, HIGH);
+        } else if (stateSegments[0] % 2 == 0) {
+          digitalWrite(startValue, LOW);
+        }
+        startValue = pinG;
+        displayOn = LOW;
+
         break;
     }
   }
 }
 //Stanga
-void handleJoystickLeft(int &startValue, bool &displayOn, int stateSegments[], int wasPressed) {
-  if (yValue < minThreshold && joyMoved == false) {
-    switch (startValue) {
-      case pinDP:
-        digitalWrite(startValue, displayOn);
-        displayOn = LOW;
-        startValue = pinC;
-        break;
-        // Add other cases for additional segments here as needed
+void handleJoystickLeft(int &startValue, bool &displayOn, int stateSegments[]) {
+  switch (startValue) {
+    case pinDP:
+      if (displayOn == HIGH) {
+        stateSegments[7]++;
+      }
+      if (stateSegments[7] % 2 != 0) {
+        digitalWrite(startValue, HIGH);
+      } else if (stateSegments[7] % 2 == 0) {
+        digitalWrite(startValue, LOW);
+      }
+      startValue = pinC;
+      displayOn = LOW;
+      break;
+      // Add other cases for additional segments here as needed
 
-      case pinC:
-        digitalWrite(startValue, displayOn);
-        displayOn = LOW;
-        startValue = pinE;
-        break;
-      case pinD:
-        digitalWrite(startValue, displayOn);
-        displayOn = LOW;
-        startValue = pinE;
-        break;
-      case pinA:
-        digitalWrite(startValue, displayOn);
-        displayOn = LOW;
-        startValue = pinF;
-        break;
-      case pinB:
-        digitalWrite(startValue, displayOn);
-        displayOn = LOW;
-        startValue = pinF;
-        break;
-    }
+    case pinC:
+      if (displayOn == HIGH) {
+        stateSegments[2]++;
+      }
+      if (stateSegments[2] % 2 != 0) {
+        digitalWrite(startValue, HIGH);
+      } else if (stateSegments[2] % 2 == 0) {
+        digitalWrite(startValue, LOW);
+      }
+      startValue = pinE;
+      displayOn = LOW;
+      break;
+    case pinD:
+      if (displayOn == HIGH) {
+        stateSegments[3]++;
+      }
+      if (stateSegments[3] % 2 != 0) {
+        digitalWrite(startValue, HIGH);
+      } else if (stateSegments[3] % 2 == 0) {
+        digitalWrite(startValue, LOW);
+      }
+      startValue = pinE;
+      displayOn = LOW;
+      break;
+    case pinA:
+      if (displayOn == HIGH) {
+        stateSegments[0]++;
+      }
+      if (stateSegments[0] % 2 != 0) {
+        digitalWrite(startValue, HIGH);
+      } else if (stateSegments[0] % 2 == 0) {
+        digitalWrite(startValue, LOW);
+      }
+      startValue = pinF;
+      displayOn = LOW;
+      break;
+    case pinB:
+      if (displayOn == HIGH) {
+        stateSegments[1]++;
+      }
+      if (stateSegments[1] % 2 != 0) {
+        digitalWrite(startValue, HIGH);
+      } else if (stateSegments[1] % 2 == 0) {
+        digitalWrite(startValue, LOW);
+      }
+      startValue = pinF;
+      displayOn = LOW;
+
+      break;
   }
 }
 
-void handleJoystickYRight(int &startValue, bool &displayOn, int wasPressed) {
-  if (yValue > maxThreshold && joyMoved == false) {
-    switch (startValue) {
-      case pinE:
-        digitalWrite(startValue, LOW);
-        displayOn = LOW;
-        startValue = pinC;
-        break;
-      case pinC:
-        digitalWrite(startValue, LOW);
-        displayOn = LOW;
-        startValue = pinDP;
-        break;
-      case pinD:
-        digitalWrite(startValue, LOW);
-        displayOn = LOW;
 
-        startValue = pinC;
-        break;
-      case pinA:
+void handleJoystickYRight(int &startValue, bool &displayOn, int stateSegments[]) {
+  switch (startValue) {
+    case pinC:
+      if (displayOn == HIGH) {
+        stateSegments[2]++;
+      }
+      if (stateSegments[2] % 2 != 0) {
+        digitalWrite(startValue, HIGH);
+      } else if (stateSegments[2] % 2 == 0) {
         digitalWrite(startValue, LOW);
-        displayOn = LOW;
+      }
+      startValue = pinDP;
+      displayOn = LOW;
 
-        startValue = pinB;
-        break;
-      case pinF:
+      break;
+    case pinE:
+      if (displayOn == HIGH) {
+        stateSegments[4]++;
+      }
+      if (stateSegments[4] % 2 != 0) {
+        digitalWrite(startValue, HIGH);
+      } else if (stateSegments[4] % 2 == 0) {
         digitalWrite(startValue, LOW);
-        displayOn = LOW;
-
-        startValue = pinB;
-        break;
-    }
+      }
+      startValue = pinC;
+      displayOn = LOW;
+      break;
+    case pinD:
+      if (displayOn == HIGH) {
+        stateSegments[3]++;
+      }
+      if (stateSegments[3] % 2 != 0) {
+        digitalWrite(startValue, HIGH);
+      } else if (stateSegments[3] % 2 == 0) {
+        digitalWrite(startValue, LOW);
+      }
+      startValue = pinC;
+      displayOn = LOW;
+      break;
+    case pinA:
+      if (displayOn == HIGH) {
+        stateSegments[0]++;
+      }
+      if (stateSegments[0] % 2 != 0) {
+        digitalWrite(startValue, HIGH);
+      } else if (stateSegments[0] % 2 == 0) {
+        digitalWrite(startValue, LOW);
+      }
+      startValue = pinB;
+      displayOn = LOW;
+      // startValue = pinB;
+      break;
+    case pinF:
+      if (displayOn == HIGH) {
+        stateSegments[5]++;
+      }
+      if (stateSegments[5] % 2 != 0) {
+        digitalWrite(startValue, HIGH);
+      } else if (stateSegments[5] % 2 == 0) {
+        digitalWrite(startValue, LOW);
+      }
+      startValue = pinB;
+      displayOn = LOW;
+      // startValue = pinB;
+      break;
   }
 }
