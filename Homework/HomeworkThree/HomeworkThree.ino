@@ -18,21 +18,49 @@ byte state = HIGH;
 byte dpState = LOW;
 byte swState = LOW;
 byte lastSwState = LOW;
-bool displayOn = LOW;  // Initially, the display is turned on
+bool displayOn = LOW;
 
-bool joyMoved = false;  // This variable is used
-// Initialize the segments
+bool joyMoved = false;
+bool joyReturned = true;
+
+
+
 int segments[segSize] = {
+  // 0      1     2     3     4     5     6   7
   pinA, pinB, pinC, pinD, pinE, pinF, pinG, pinDP
 };
+int stateSegments[segSize] = { 1, 1, 1, 1, 1, 1, 1, 1 };
+
+
 int xValue;
 int yValue;
 
-int minThreshold = 300;
+int minThreshold = 200;
 int maxThreshold = 700;
 int startValue = pinDP;
-int nextValue = 0;
+int wasPressed = 0;
 
+unsigned long previousMillis = 0;
+const unsigned long interval = 100;
+unsigned long previousMillis2 = 0;
+const unsigned long interval2 = 400;
+
+void handleButtonInterrupt() {
+
+  swState = digitalRead(pinSW);
+  if (swState == LOW && lastSwState == HIGH) {
+    displayOn = !displayOn;
+  }
+  lastSwState = swState;
+}
+
+void handleXJoystickInterrupt() {
+  xValue = analogRead(pinX);
+}
+
+void handleYJoystickInterrupt() {
+  yValue = analogRead(pinY);
+}
 void setup() {
   // Initialize all the pins
   for (int i = 0; i < segSize; i++) {
@@ -46,56 +74,77 @@ void setup() {
   if (commonAnode == true) {
     state = !state;
   }
-  attachInterrupt(digitalPinToInterrupt(pinSW), switchInterrupt, FALLING);
+  attachInterrupt(digitalPinToInterrupt(pinSW), handleButtonInterrupt, FALLING);
+
+  attachInterrupt(digitalPinToInterrupt(pinX), handleXJoystickInterrupt, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(pinY), handleYJoystickInterrupt, CHANGE);
 }
+boolean segmentState = false;  // Initialize segment state as OFF
 
 void loop() {
-  //De refacut
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis2 >= interval2) {
+    previousMillis2 = currentMillis;
 
-  swState = digitalRead(pinSW);
-  if (swState == LOW && lastSwState == HIGH) {
-    // Button was pressed, toggle the display state
-    displayOn = !displayOn;
-  }
+    swState = digitalRead(pinSW);
+    if (swState == LOW && lastSwState == HIGH) {
+      displayOn = !displayOn;
+      wasPressed++;
+    }
+    lastSwState = swState;
+    segmentState = !segmentState;
 
-  lastSwState = swState;
+    // Update the segment based on the segmentState
+    digitalWrite(startValue, segmentState ? HIGH : LOW);
 
-  digitalWrite(startValue, HIGH);
 
-  xValue = analogRead(pinX);
-  yValue = analogRead(pinY);
+    xValue = analogRead(pinX);
+    yValue = analogRead(pinY);
 
-  // Turn on the 'startValue' segment for Y direction
+    if (xValue < minThreshold && joyMoved == false && joyReturned) {
+      handleJoystickBot(startValue, displayOn);
+      joyMoved = true;
+      joyReturned = false;
+    }
 
-  // SUS
-  handleJoystickTop(startValue, displayOn, joyMoved);
+    if (xValue > maxThreshold && joyMoved == false && joyReturned) {
+      handleJoystickTop(startValue, displayOn);
+      joyMoved = true;
+      joyReturned = false;
+    }
 
-  //JOS
-  handleJoystickBot(startValue, displayOn, joyMoved);
+    if (yValue < minThreshold && joyMoved == false && joyReturned) {
+      handleJoystickLeft(startValue, displayOn, stateSegments, wasPressed);
+      joyMoved = true;
+      joyReturned = false;
+    }
+    if (yValue > maxThreshold && joyMoved == false && joyReturned) {
+      handleJoystickYRight(startValue, displayOn, wasPressed);
+      joyMoved = true;
+      joyReturned = false;
+    }
 
-  // Check if the joystick is back to the neutral position in X direction
-  if (xValue >= minThreshold && xValue <= maxThreshold) {
-    joyMoved = false;
-  }
-
-  //IN STANGA
-  handleJoystickLeft(startValue, displayOn, joyMoved);
-
-  // IN DREAPTA
-  handleJoystickYRight(startValue, displayOn, joyMoved);
-
-  // Check if the joystick is back to the neutral position in Y direction
-  if (yValue >= minThreshold && yValue <= maxThreshold) {
-    joyMoved = false;
+    if (xValue >= minThreshold && xValue <= maxThreshold && yValue >= minThreshold && yValue <= maxThreshold) {
+      joyMoved = false;
+      joyReturned = true;
+      pause();
+    }
+    wasPressed = 0;
   }
 }
-void switchInterrupt() {
-  // This function is called when the switch is pressed
-  swState = LOW;
-  // Button was pressed, toggle the display state
-  displayOn = !displayOn;
+void pause() {
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+  }
 }
-void handleJoystickTop(int &startValue, bool &displayOn, bool &joyMoved) {
+void pause300() {
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis2 >= interval2) {
+    previousMillis2 = currentMillis;
+  }
+}
+void handleJoystickTop(int &startValue, bool &displayOn) {
   if (xValue > maxThreshold && joyMoved == false) {
     switch (startValue) {
       case pinC:
@@ -121,11 +170,10 @@ void handleJoystickTop(int &startValue, bool &displayOn, bool &joyMoved) {
         startValue = pinA;
         break;
     }
-    joyMoved = true;
   }
 }
 
-void handleJoystickBot(int &startValue, bool &displayOn, bool &joyMoved) {
+void handleJoystickBot(int &startValue, bool &displayOn) {
   if (xValue < minThreshold && joyMoved == false) {
     switch (startValue) {
       case pinG:
@@ -151,11 +199,10 @@ void handleJoystickBot(int &startValue, bool &displayOn, bool &joyMoved) {
         startValue = pinG;
         break;
     }
-    joyMoved = true;
   }
 }
-
-void handleJoystickLeft(int &startValue, bool &displayOn, bool &joyMoved) {
+//Stanga
+void handleJoystickLeft(int &startValue, bool &displayOn, int stateSegments[], int wasPressed) {
   if (yValue < minThreshold && joyMoved == false) {
     switch (startValue) {
       case pinDP:
@@ -163,6 +210,8 @@ void handleJoystickLeft(int &startValue, bool &displayOn, bool &joyMoved) {
         displayOn = LOW;
         startValue = pinC;
         break;
+        // Add other cases for additional segments here as needed
+
       case pinC:
         digitalWrite(startValue, displayOn);
         displayOn = LOW;
@@ -184,34 +233,40 @@ void handleJoystickLeft(int &startValue, bool &displayOn, bool &joyMoved) {
         startValue = pinF;
         break;
     }
-    joyMoved = true;
   }
 }
 
-void handleJoystickYRight(int &startValue, bool &displayOn, bool &joyMoved) {
+void handleJoystickYRight(int &startValue, bool &displayOn, int wasPressed) {
   if (yValue > maxThreshold && joyMoved == false) {
     switch (startValue) {
       case pinE:
         digitalWrite(startValue, LOW);
+        displayOn = LOW;
         startValue = pinC;
         break;
       case pinC:
         digitalWrite(startValue, LOW);
+        displayOn = LOW;
         startValue = pinDP;
         break;
       case pinD:
         digitalWrite(startValue, LOW);
+        displayOn = LOW;
+
         startValue = pinC;
         break;
       case pinA:
         digitalWrite(startValue, LOW);
+        displayOn = LOW;
+
         startValue = pinB;
         break;
       case pinF:
         digitalWrite(startValue, LOW);
+        displayOn = LOW;
+
         startValue = pinB;
         break;
     }
-    joyMoved = true;
   }
 }
