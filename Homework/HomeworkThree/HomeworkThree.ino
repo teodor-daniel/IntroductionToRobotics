@@ -79,7 +79,31 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(pinX), handleXJoystickInterrupt, CHANGE);
   attachInterrupt(digitalPinToInterrupt(pinY), handleYJoystickInterrupt, CHANGE);
 }
-boolean segmentState = false;  // Initialize segment state as OFF
+boolean segmentState = false;  
+
+unsigned long buttonPressStartTime = 0;
+const unsigned long buttonPressDuration = 2000; 
+void handleLongButtonPress(int &startValue) {
+  unsigned long currentTime = millis();
+
+  // Check if the button is pressed
+  if (digitalRead(pinSW) == LOW) {
+    if (buttonPressStartTime == 0) {
+      buttonPressStartTime = currentTime;
+    }
+
+    if (currentTime - buttonPressStartTime >= buttonPressDuration) {
+      // Turn off all 7-segment display pins
+      for (int i = 0; i < segSize; i++) {
+        digitalWrite(segments[i], LOW);
+      }
+      startValue = pinDP;
+
+    }
+  } else {
+    buttonPressStartTime = 0;
+  }
+}
 
 void loop() {
   unsigned long currentMillis = millis();
@@ -94,7 +118,6 @@ void loop() {
     lastSwState = swState;
     segmentState = !segmentState;
 
-    // Update the segment based on the segmentState
     digitalWrite(startValue, segmentState ? HIGH : LOW);
 
 
@@ -130,6 +153,7 @@ void loop() {
       pause();
     }
     wasPressed = 0;
+    handleLongButtonPress(startValue);
   }
 }
 void pause() {
@@ -316,7 +340,6 @@ void handleJoystickLeft(int &startValue, bool &displayOn, int stateSegments[]) {
       startValue = pinC;
       displayOn = LOW;
       break;
-      // Add other cases for additional segments here as needed
 
     case pinC:
       if (displayOn == HIGH) {
@@ -421,7 +444,6 @@ void handleJoystickYRight(int &startValue, bool &displayOn, int stateSegments[])
       }
       startValue = pinB;
       displayOn = LOW;
-      // startValue = pinB;
       break;
     case pinF:
       if (displayOn == HIGH) {
@@ -434,7 +456,6 @@ void handleJoystickYRight(int &startValue, bool &displayOn, int stateSegments[])
       }
       startValue = pinB;
       displayOn = LOW;
-      // startValue = pinB;
       break;
   }
 }
