@@ -9,6 +9,8 @@ Hey there, in my third year at the Faculty of Mathematics and Computer Science, 
 - 📝 Homework 2: This project involves creating a simulation of a three-floor elevator control system using Arduino, which includes the integration of LEDs, buttons, and a buzzer. It's akin to simulating the operation of an elevator.
    📂 - [File location](https://github.com/teodor-daniel1234/IntroductionToRobotics/tree/main/Homework/HomeworkTwo)
 
+- 📝 Homework 3:In this assignment, the primary focus is directed towards the utilization of a controller as the central instrument for managing the individual segments of a 7-segment display. 
+ 📂 - [File location](https://github.com/teodor-daniel1234/IntroductionToRobotics/tree/main/Homework/HomeworkThree)
 
 ## 💡 Homework 1
 ### 🎯Task:
@@ -35,3 +37,16 @@ LEDs, buttons, and a buzzer with Arduino.
 
 ### 📹 Video:
 - [Video Presentation][(https://youtu.be/1z6IuqXTeDo)](https://youtube.com/shorts/wVC9FuauEjk?feature=share)]
+
+## 🕹️ Homework 3
+### 🎯Task:
+This assignment centers around the use of a joystick to govern the individual segments of a 7-segment display.
+
+
+### 📷Image of the Final Design:
+![FinalBuild](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkThree/FinalBuild.jpeg)
+### ⚙️Code:
+- [SourceCode.ino](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkThree/HomeworkThree.ino)
+
+### 📹 Video:
+- [Video Presentation][(https://youtu.be/pDAWOWdLimo)]]
