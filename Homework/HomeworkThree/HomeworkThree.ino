@@ -182,11 +182,11 @@ void handleJoystickTop(int &startValue, bool &displayOn, int stateSegments[]) {
     switch (startValue) {
       case pinC:
         if (displayOn == HIGH) {
-          stateSegments[pinC]++;
+          stateSegments[2]++;
         }
-        if (stateSegments[pinC] % 2 != 0) {
+        if (stateSegments[2] % 2 != 0) {
           digitalWrite(startValue, HIGH);
-        } else if (stateSegments[pinC] % 2 == 0) {
+        } else if (stateSegments[2] % 2 == 0) {
           digitalWrite(startValue, LOW);
         }
         startValue = pinG;
@@ -195,11 +195,11 @@ void handleJoystickTop(int &startValue, bool &displayOn, int stateSegments[]) {
       case pinE:
 
         if (displayOn == HIGH) {
-          stateSegments[pinE]++;
+          stateSegments[4]++;
         }
-        if (stateSegments[pinE] % 2 != 0) {
+        if (stateSegments[4] % 2 != 0) {
           digitalWrite(startValue, HIGH);
-        } else if (stateSegments[pinE] % 2 == 0) {
+        } else if (stateSegments[4] % 2 == 0) {
           digitalWrite(startValue, LOW);
         }
         startValue = pinG;
@@ -208,11 +208,11 @@ void handleJoystickTop(int &startValue, bool &displayOn, int stateSegments[]) {
         break;
       case pinD:
         if (displayOn == HIGH) {
-          stateSegments[pinD]++;
+          stateSegments[3]++;
         }
-        if (stateSegments[pinD] % 2 != 0) {
+        if (stateSegments[3] % 2 != 0) {
           digitalWrite(startValue, HIGH);
-        } else if (stateSegments[pinD] % 2 == 0) {
+        } else if (stateSegments[3] % 2 == 0) {
           digitalWrite(startValue, LOW);
         }
         startValue = pinG;
@@ -220,33 +220,33 @@ void handleJoystickTop(int &startValue, bool &displayOn, int stateSegments[]) {
         break;
       case pinG:
         if (displayOn == HIGH) {
-          stateSegments[pinG]++;
+          stateSegments[6]++;
         }
-        if (stateSegments[pinG] % 2 != 0) {
+        if (stateSegments[6] % 2 != 0) {
           digitalWrite(startValue, HIGH);
-        } else if (stateSegments[pinG] % 2 == 0) {
+        } else if (stateSegments[6] % 2 == 0) {
           digitalWrite(startValue, LOW);
         }
         startValue = pinA;
         break;
       case pinF:
         if (displayOn == HIGH) {
-          stateSegments[pinF]++;
+          stateSegments[5]++;
         }
-        if (stateSegments[pinF] % 2 != 0) {
+        if (stateSegments[5] % 2 != 0) {
           digitalWrite(startValue, HIGH);
-        } else if (stateSegments[pinF] % 2 == 0) {
+        } else if (stateSegments[5] % 2 == 0) {
           digitalWrite(startValue, LOW);
         }
         startValue = pinA;
         break;
       case pinB:
         if (displayOn == HIGH) {
-          stateSegments[pinB]++;
+          stateSegments[1]++;
         }
-        if (stateSegments[pinB] % 2 != 0) {
+        if (stateSegments[1] % 2 != 0) {
           digitalWrite(startValue, HIGH);
-        } else if (stateSegments[pinB] % 2 == 0) {
+        } else if (stateSegments[1] % 2 == 0) {
           digitalWrite(startValue, LOW);
         }
         startValue = pinA;
@@ -260,11 +260,11 @@ void handleJoystickBot(int &startValue, bool &displayOn, int stateSegments[]) {
     switch (startValue) {
       case pinG:
         if (displayOn == HIGH) {
-          stateSegments[pinG]++;
+          stateSegments[6]++;
         }
-        if (stateSegments[pinG] % 2 != 0) {
+        if (stateSegments[6] % 2 != 0) {
           digitalWrite(startValue, HIGH);
-        } else if (stateSegments[pinG] % 2 == 0) {
+        } else if (stateSegments[6] % 2 == 0) {
           digitalWrite(startValue, LOW);
         }
         startValue = pinD;
@@ -273,11 +273,11 @@ void handleJoystickBot(int &startValue, bool &displayOn, int stateSegments[]) {
         break;
       case pinC:
         if (displayOn == HIGH) {
-          stateSegments[pinC]++;
+          stateSegments[2]++;
         }
-        if (stateSegments[pinC] % 2 != 0) {
+        if (stateSegments[2] % 2 != 0) {
           digitalWrite(startValue, HIGH);
-        } else if (stateSegments[pinC] % 2 == 0) {
+        } else if (stateSegments[2] % 2 == 0) {
           digitalWrite(startValue, LOW);
         }
         startValue = pinD;
@@ -285,11 +285,11 @@ void handleJoystickBot(int &startValue, bool &displayOn, int stateSegments[]) {
         break;
       case pinE:
         if (displayOn == HIGH) {
-          stateSegments[pinE]++;
+          stateSegments[4]++;
         }
-        if (stateSegments[pinE] % 2 != 0) {
+        if (stateSegments[4] % 2 != 0) {
           digitalWrite(startValue, HIGH);
-        } else if (stateSegments[pinE] % 2 == 0) {
+        } else if (stateSegments[4] % 2 == 0) {
           digitalWrite(startValue, LOW);
         }
         startValue = pinD;
@@ -297,11 +297,11 @@ void handleJoystickBot(int &startValue, bool &displayOn, int stateSegments[]) {
         break;
       case pinB:
         if (displayOn == HIGH) {
-          stateSegments[pinB]++;
+          stateSegments[1]++;
         }
-        if (stateSegments[pinB] % 2 != 0) {
+        if (stateSegments[1] % 2 != 0) {
           digitalWrite(startValue, HIGH);
-        } else if (stateSegments[pinB] % 2 == 0) {
+        } else if (stateSegments[1] % 2 == 0) {
           digitalWrite(startValue, LOW);
         }
         startValue = pinG;
@@ -309,22 +309,22 @@ void handleJoystickBot(int &startValue, bool &displayOn, int stateSegments[]) {
         break;
       case pinF:
         if (displayOn == HIGH) {
-          stateSegments[pinF]++;
+          stateSegments[5]++;
         }
-        if (stateSegments[pinF] % 2 != 0) {
+        if (stateSegments[5] % 2 != 0) {
           digitalWrite(startValue, HIGH);
-        } else if (stateSegments[pinF] % 2 == 0) {
+        } else if (stateSegments[5] % 2 == 0) {
           digitalWrite(startValue, LOW);
         }
         startValue = pinG;
         displayOn = LOW;
       case pinA:
         if (displayOn == HIGH) {
-          stateSegments[pinA]++;
+          stateSegments[0]++;
         }
-        if (stateSegments[pinA] % 2 != 0) {
+        if (stateSegments[0] % 2 != 0) {
           digitalWrite(startValue, HIGH);
-        } else if (stateSegments[pinA] % 2 == 0) {
+        } else if (stateSegments[0] % 2 == 0) {
           digitalWrite(startValue, LOW);
         }
         startValue = pinG;
@@ -339,24 +339,25 @@ void handleJoystickLeft(int &startValue, bool &displayOn, int stateSegments[]) {
   switch (startValue) {
     case pinDP:
       if (displayOn == HIGH) {
-        stateSegments[pinDP]++;
+        stateSegments[7]++;
       }
-      if (stateSegments[pinDP] % 2 != 0) {
+      if (stateSegments[7] % 2 != 0) {
         digitalWrite(startValue, HIGH);
-      } else if (stateSegments[pinDP] % 2 == 0) {
+      } else if (stateSegments[7] % 2 == 0) {
         digitalWrite(startValue, LOW);
       }
       startValue = pinC;
       displayOn = LOW;
       break;
+      // Add other cases for additional segments here as needed
 
     case pinC:
       if (displayOn == HIGH) {
-        stateSegments[pinC]++;
+        stateSegments[2]++;
       }
-      if (stateSegments[pinC] % 2 != 0) {
+      if (stateSegments[2] % 2 != 0) {
         digitalWrite(startValue, HIGH);
-      } else if (stateSegments[pinC] % 2 == 0) {
+      } else if (stateSegments[2] % 2 == 0) {
         digitalWrite(startValue, LOW);
       }
       startValue = pinE;
@@ -364,11 +365,11 @@ void handleJoystickLeft(int &startValue, bool &displayOn, int stateSegments[]) {
       break;
     case pinD:
       if (displayOn == HIGH) {
-        stateSegments[pinD]++;
+        stateSegments[3]++;
       }
-      if (stateSegments[pinD] % 2 != 0) {
+      if (stateSegments[3] % 2 != 0) {
         digitalWrite(startValue, HIGH);
-      } else if (stateSegments[pinD] % 2 == 0) {
+      } else if (stateSegments[3] % 2 == 0) {
         digitalWrite(startValue, LOW);
       }
       startValue = pinE;
@@ -376,11 +377,11 @@ void handleJoystickLeft(int &startValue, bool &displayOn, int stateSegments[]) {
       break;
     case pinA:
       if (displayOn == HIGH) {
-        stateSegments[pinA]++;
+        stateSegments[0]++;
       }
-      if (stateSegments[pinA] % 2 != 0) {
+      if (stateSegments[0] % 2 != 0) {
         digitalWrite(startValue, HIGH);
-      } else if (stateSegments[pinA] % 2 == 0) {
+      } else if (stateSegments[0] % 2 == 0) {
         digitalWrite(startValue, LOW);
       }
       startValue = pinF;
@@ -388,11 +389,11 @@ void handleJoystickLeft(int &startValue, bool &displayOn, int stateSegments[]) {
       break;
     case pinB:
       if (displayOn == HIGH) {
-        stateSegments[pinB]++;
+        stateSegments[1]++;
       }
-      if (stateSegments[pinB] % 2 != 0) {
+      if (stateSegments[1] % 2 != 0) {
         digitalWrite(startValue, HIGH);
-      } else if (stateSegments[pinB] % 2 == 0) {
+      } else if (stateSegments[1] % 2 == 0) {
         digitalWrite(startValue, LOW);
       }
       startValue = pinF;
@@ -407,11 +408,11 @@ void handleJoystickYRight(int &startValue, bool &displayOn, int stateSegments[])
   switch (startValue) {
     case pinC:
       if (displayOn == HIGH) {
-        stateSegments[pinC]++;
+        stateSegments[2]++;
       }
-      if (stateSegments[pinC] % 2 != 0) {
+      if (stateSegments[2] % 2 != 0) {
         digitalWrite(startValue, HIGH);
-      } else if (stateSegments[pinC] % 2 == 0) {
+      } else if (stateSegments[2] % 2 == 0) {
         digitalWrite(startValue, LOW);
       }
       startValue = pinDP;
@@ -420,11 +421,11 @@ void handleJoystickYRight(int &startValue, bool &displayOn, int stateSegments[])
       break;
     case pinE:
       if (displayOn == HIGH) {
-        stateSegments[pinE]++;
+        stateSegments[4]++;
       }
-      if (stateSegments[pinE] % 2 != 0) {
+      if (stateSegments[4] % 2 != 0) {
         digitalWrite(startValue, HIGH);
-      } else if (stateSegments[pinE] % 2 == 0) {
+      } else if (stateSegments[4] % 2 == 0) {
         digitalWrite(startValue, LOW);
       }
       startValue = pinC;
@@ -432,11 +433,11 @@ void handleJoystickYRight(int &startValue, bool &displayOn, int stateSegments[])
       break;
     case pinD:
       if (displayOn == HIGH) {
-        stateSegments[pinD]++;
+        stateSegments[3]++;
       }
-      if (stateSegments[pinD] % 2 != 0) {
+      if (stateSegments[3] % 2 != 0) {
         digitalWrite(startValue, HIGH);
-      } else if (stateSegments[pinD] % 2 == 0) {
+      } else if (stateSegments[3] % 2 == 0) {
         digitalWrite(startValue, LOW);
       }
       startValue = pinC;
@@ -444,27 +445,29 @@ void handleJoystickYRight(int &startValue, bool &displayOn, int stateSegments[])
       break;
     case pinA:
       if (displayOn == HIGH) {
-        stateSegments[pinA]++;
+        stateSegments[0]++;
       }
-      if (stateSegments[pinA] % 2 != 0) {
+      if (stateSegments[0] % 2 != 0) {
         digitalWrite(startValue, HIGH);
-      } else if (stateSegments[pinA] % 2 == 0) {
+      } else if (stateSegments[0] % 2 == 0) {
         digitalWrite(startValue, LOW);
       }
       startValue = pinB;
       displayOn = LOW;
+      // startValue = pinB;
       break;
     case pinF:
       if (displayOn == HIGH) {
-        stateSegments[pinF]++;
+        stateSegments[5]++;
       }
-      if (stateSegments[pinF] % 2 != 0) {
+      if (stateSegments[5] % 2 != 0) {
         digitalWrite(startValue, HIGH);
-      } else if (stateSegments[pinF] % 2 == 0) {
+      } else if (stateSegments[5] % 2 == 0) {
         digitalWrite(startValue, LOW);
       }
       startValue = pinB;
       displayOn = LOW;
+      // startValue = pinB;
       break;
   }
 }
