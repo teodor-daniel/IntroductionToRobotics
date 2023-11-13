@@ -9,8 +9,11 @@ Hey there, in my third year at the Faculty of Mathematics and Computer Science, 
 - 📝 Homework 2: This project involves creating a simulation of a three-floor elevator control system using Arduino, which includes the integration of LEDs, buttons, and a buzzer. It's akin to simulating the operation of an elevator.
    📂 - [File location](https://github.com/teodor-daniel1234/IntroductionToRobotics/tree/main/Homework/HomeworkTwo)
 
-- 📝 Homework 3:In this assignment, the primary focus is directed towards the utilization of a controller as the central instrument for managing the individual segments of a 7-segment display. 
- 📂 - [File location](https://github.com/teodor-daniel1234/IntroductionToRobotics/tree/main/Homework/HomeworkThree)
+- 📝 Homework 3: In this assignment, the primary focus is directed towards the utilization of a controller as the central instrument for managing the individual segments of a 7-segment display. 
+   📂 - [File location](https://github.com/teodor-daniel1234/IntroductionToRobotics/tree/main/Homework/HomeworkThree)
+
+- 📝 Homework 4: This assignment revolves around the development of a stopwatch timer, employing a 4-digit 7-segment display and three buttons for control. The objective is to implement a stopwatch that counts in 10ths of a second.
+   📂 - [File location](https://github.com/teodor-daniel1234/IntroductionToRobotics/tree/main/Homework/HomeworkFour)
 
 ## 💡 Homework 1
 ### 🎯Task:
@@ -41,8 +44,6 @@ LEDs, buttons, and a buzzer with Arduino.
 ## 🕹️ Homework 3
 ### 🎯Task:
 This assignment centers around the use of a joystick to govern the individual segments of a 7-segment display.
-
-
 ### 📷Image of the Final Design:
 ![FinalBuild](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkThree/FinalBuild.jpeg)
 ### ⚙️Code:
@@ -50,3 +51,14 @@ This assignment centers around the use of a joystick to govern the individual se
 
 ### 📹 Video:
 - [Video Presentation][(https://youtu.be/pDAWOWdLimo)]]
+- 
+## ⏱️ Homework 4
+### 🎯Task:
+This assignment focuses on creating an innovative stopwatch timer using a 7-segment display. The goal is to implement a stopwatch with 10th-of-a-second precision, featuring a lap functionality akin to basic stopwatch functions found on most phones.
+### 📷Image of the Final Design:
+![FinalBuild](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkFour/FinalBuild.jpeg)
+### ⚙️Code:
+- [SourceCode.ino](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkThree/HomeworkFour.ino)
+
+### 📹 Video:
+- [Video Presentation][]]
