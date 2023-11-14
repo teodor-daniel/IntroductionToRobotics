@@ -1,173 +1,187 @@
-const int latchPin = 11;
-const int clockPin = 10;
-const int dataPin = 12;
+const int latchPinNumber = 11;
+const int clockPinNumber = 10;
+const int dataPinNumber = 12;
 
-const int segD1 = 4;
-const int segD2 = 5;
-const int segD3 = 6;
-const int segD4 = 7;
+int displayDigitPins[] = { 4, 5, 6, 7 };
+const int numberOfDisplays = 4;
+const int numberOfEncodings = 10;
 
-int displayDigits[] = { segD1, segD2, segD3, segD4 };
-const int displayCount = 4;
-
-const int encodingsNumber = 10;
-
-byte byteEncodings[encodingsNumber] = {
-  B11111100,  // 0
-  B01100000,  // 1
-  B11011010,  // 2
-  B11110010,  // 3
-  B01100110,  // 4
-  B10110110,  // 5
-  B10111110,  // 6
-  B11100000,  // 7
-  B11111110,  // 8
-  B11110110   // 9
+byte digitEncodings[numberOfEncodings][2] = {
+  { B11111100, B11111101 },  // 0
+  { B01100000, B01100001 },  // 1
+  { B11011010, B11011011 },  // 2
+  { B11110010, B11110011 },  // 3
+  { B01100110, B01100111 },  // 4
+  { B10110110, B10110111 },  // 5
+  { B10111110, B10111111 },  // 6
+  { B11100000, B11100001 },  // 7
+  { B11111110, B11111111 },  // 8
+  { B11110110, B11110111 }   // 9
 };
-
-byte byteEncodings2[] = {
-  B11111101,  // 0
-  B01100001,  // 1
-  B11011011,  // 2
-  B11110011,  // 3
-  B01100111,  // 4
-  B10110111,  // 5
-  B10111111,  // 6
-  B11100001,  // 7
-  B11111111,  // 8
-  B11110111   // 9
-};
-
 unsigned long lastIncrement = 0;
 unsigned long delayCount = 100;
-unsigned long number = 0;
+unsigned long displayedNumber = 0;
+const int buttonOne = 2;
+const int buttonTwo = 3;
+const int buttonThree = 9;
+int debounceDelay = 300;
 
-const int buttonPin1 = 2;
-const int buttonPin2 = 3;
-const int buttonPin3 = 9;
+byte startStopButtonState;
+byte startStopButtonLastState = HIGH;
+byte startStopButtonActive = LOW;
+long startStopButtonLastDebounceTime = 0;
 
-byte lastButtonState1 = 1;
-byte lastButtonState2 = 1;
-byte lastButtonState3 = 1;
+byte resetButtonState;
+byte resetButtonLastState = HIGH;
+byte resetButtonActive = LOW;
+long resetButtonLastDebounceTime = 0;
 
-byte buttonState;
-byte buttonState2;
-byte buttonState3;
-byte lastButtonState = 1;
-byte buttonActive = LOW;
-int debounceDelay = 50;
-long lastDebounceTime = 0;
+byte flagButtonState;
+byte flagButtonLastState = HIGH;
+byte flagButtonActive = LOW;
+long flagButtonLastDebounceTime = 0;
 
-unsigned long laps[5];
-int currentLap = 0;
+const int lapArraySize = 4;
+int lapArray[lapArraySize];
+int currentLapIndex = -1;
 
 void setup() {
+  pinMode(latchPinNumber, OUTPUT);
+  pinMode(clockPinNumber, OUTPUT);
+  pinMode(dataPinNumber, OUTPUT);
 
-  pinMode(latchPin, OUTPUT);
-  pinMode(clockPin, OUTPUT);
-  pinMode(dataPin, OUTPUT);
-
-  for (int i = 0; i < displayCount; i++) {
-    pinMode(displayDigits[i], OUTPUT);
-    digitalWrite(displayDigits[i], LOW);
+  for (int i = 0; i < numberOfDisplays; i++) {
+    pinMode(displayDigitPins[i], OUTPUT);
+    digitalWrite(displayDigitPins[i], LOW);
   }
 
-  pinMode(buttonPin1, INPUT_PULLUP);
-  pinMode(buttonPin2, INPUT_PULLUP);
-  pinMode(buttonPin3, INPUT_PULLUP);
+  pinMode(buttonOne, INPUT_PULLUP);
+  pinMode(buttonTwo, INPUT_PULLUP);
+  pinMode(buttonThree, INPUT_PULLUP);
 
   Serial.begin(9600);
 }
 
 void loop() {
-  handleButtonPress();
-  handleNumberIncrement();
-  handleResetButton();
-  handleLap();
-  updateDisplay();
+  startStop();
+  resetButton();
+  Lap();
+  writeNumber(displayedNumber);
 }
 
-void writeReg(int digit) {
-  digitalWrite(latchPin, LOW);
-  shiftOut(dataPin, clockPin, MSBFIRST, digit);
-  digitalWrite(latchPin, HIGH);
+void addLap(int value) {
+  currentLapIndex = (currentLapIndex + 1) % lapArraySize;
+  lapArray[currentLapIndex] = value;
 }
 
-void activateDisplay(int displayNumber) {
-  for (int i = 0; i < displayCount; i++) {
-    digitalWrite(displayDigits[i], HIGH);
+void printLapArray() {
+  if (currentLapIndex >= 0) {
+    displayedNumber = lapArray[currentLapIndex];
+    currentLapIndex = (currentLapIndex - 1 + lapArraySize) % lapArraySize;
+  } else {
+    currentLapIndex = lapArraySize - 1;
+    printLapArray();
   }
+}
 
-  digitalWrite(displayDigits[displayNumber], LOW);
+void writeDigit(int digit) {
+  digitalWrite(latchPinNumber, LOW);
+  shiftOut(dataPinNumber, clockPinNumber, MSBFIRST, digit);
+  digitalWrite(latchPinNumber, HIGH);
 }
 
 void writeNumber(int number) {
-  int currentNumber = number;
-  int displayDigit = 3;
-  int lastDigit = 0;
   if (number == 0) {
-    for (int i = 0; i < displayCount; i++) {
+    for (int i = 0; i < numberOfDisplays; i++) {
       activateDisplay(i);
-      if (i == 2) {
-        writeReg(byteEncodings2[0]);
-      }
-      writeReg(byteEncodings[0]);
+      writeDigit(digitEncodings[0][i == 2 ? 1 : 0]);
+      delay(0);
+      writeDigit(B00000000);
     }
+  } else {
+    int displayDigit = 3;
+    while (number != 0) {
+      int lastDigit = number % 10;
+      activateDisplay(displayDigit);
 
-    delay(0);
-    displayDigit--;
-    writeReg(B00000000);
-  }
-  while (currentNumber != 0) {
-    lastDigit = currentNumber % 10;
-    activateDisplay(displayDigit);
-    if (displayDigit == 2)
-      writeReg(byteEncodings2[lastDigit]);
-    else
-      writeReg(byteEncodings[lastDigit]);
-    delay(0);
-    displayDigit--;
-    currentNumber /= 10;
-    writeReg(B00000000);
-  }
+      if (displayDigit == 2) {
+        writeDigit(digitEncodings[lastDigit][1]);
+      } else {
+        writeDigit(digitEncodings[lastDigit][0]);
+      }
 
-  for (int i = displayDigit; i >= 0; i--) {
-    activateDisplay(i);
-    writeReg(B11111100);
-    delay(0);
-    writeReg(B00000000);
+      delay(0);
+      writeDigit(B00000000);
+      displayDigit--;
+      number /= 10;
+    }
+    initDisplay(displayDigit);
   }
 }
 
-void handleButtonPress() {
-  const bool buttonJustPressed = (millis() - lastDebounceTime > debounceDelay) && (digitalRead(buttonPin1) == LOW);
-  if (buttonJustPressed && (buttonState != lastButtonState)) {
-    buttonActive = !buttonActive;
-    lastDebounceTime = millis();
+void startStop() {
+  startStopButtonState = digitalRead(buttonOne);
+
+  if (millis() - startStopButtonLastDebounceTime > debounceDelay && startStopButtonState == LOW) {
+    if (startStopButtonState != startStopButtonLastState) {
+      startStopButtonActive = !startStopButtonActive;
+      startStopButtonLastDebounceTime = millis();
+    }
   }
-  lastButtonState = buttonState = digitalRead(buttonPin1);
-}
+  startStopButtonLastState = startStopButtonState;
 
-void handleNumberIncrement() {
-  const bool shouldIncrementNumber = (millis() - lastIncrement > delayCount) && (buttonActive == 1);
-
-  if (shouldIncrementNumber) {
-    number = (number + 1) % 10000;
+  if (millis() - lastIncrement > delayCount && startStopButtonActive == 1) {
+    displayedNumber++;
+    displayedNumber %= 10000;
     lastIncrement = millis();
   }
 }
 
-void handleResetButton() {
-  buttonState2 = digitalRead(buttonPin2);
-  if (buttonState2 == 0 && buttonActive == 0) {
-    number = 0;
+void resetButton() {
+  resetButtonState = digitalRead(buttonTwo);
+
+  if (millis() - resetButtonLastDebounceTime > debounceDelay && resetButtonState == LOW) {
+    if (startStopButtonActive == LOW) {
+      displayedNumber = 0;
+      resetButtonActive = !resetButtonActive;
+      Serial.println("Active");
+    }
+
+    resetButtonLastDebounceTime = millis();
+    resetButtonLastState = resetButtonState;
   }
 }
 
-void handleLap() {
-  buttonState3 = digitalRead(buttonPin3);
+void Lap() {
+  flagButtonState = digitalRead(buttonThree);
+
+  if (millis() - flagButtonLastDebounceTime > debounceDelay && flagButtonState == LOW) {
+    if (resetButtonActive == LOW) {
+      addLap(displayedNumber);
+    } else {
+      printLapArray();
+    }
+
+    flagButtonLastDebounceTime = millis();
+    flagButtonLastState = flagButtonState;
+  }
 }
 
-void updateDisplay() {
-  writeNumber(number);
+void initDisplay(int phase) {
+  for (int i = phase; i >= 0; i--) {
+    activateDisplay(i);
+    writeDigit(B11111100);
+    delay(0);
+    writeDigit(B00000000);
+  }
+}
+
+void activateDisplay(int displayNumber) {
+  for (int i = 0; i < numberOfDisplays; i++) {
+    if (i == displayNumber) {
+      digitalWrite(displayDigitPins[i], LOW);
+    } else {
+      digitalWrite(displayDigitPins[i], HIGH);
+    }
+  }
 }
