@@ -16,6 +16,16 @@ int minDistance = 10;  //testvalue
 int maxDistance = 40;
 int reset;
 boolean automatic = true;
+
+int lastLight;
+const int photocellPin = A0;
+int photocellValue = 0;
+int ledValue = 0;
+
+int photocellArray[10];
+int currentArrayLightPosition = 0;
+int minLight = 100;
+int maxLight = 400;
 void setup() {
   Serial.begin(9600);
   pinMode(trigPin, OUTPUT);
@@ -31,6 +41,7 @@ void loop() {
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= samplingInterval) {
     previousMillis = currentMillis;
+    //Sonic
     digitalWrite(trigPin, LOW);
     delayMicroseconds(5);
     digitalWrite(trigPin, HIGH);
@@ -38,19 +49,39 @@ void loop() {
     digitalWrite(trigPin, LOW);
     duration = pulseIn(echoPin, HIGH);
     distanceArray[arrayIndex] = duration * 0.034 / 2;
-
     arrayIndex++;
     if (arrayIndex >= 10) {
       arrayIndex = 0;
     }
     lastDistance = distanceArray[(arrayIndex == 0) ? 9 : arrayIndex - 1];
-    if (lastDistance < minDistance || lastDistance > maxDistance) {
-      analogWrite(redPin, 255);
+    //Light
+    photocellValue = analogRead(photocellPin);
+
+
+    photocellArray[currentArrayLightPosition] = photocellValue;
+    currentArrayLightPosition++;
+    if (currentArrayLightPosition >= 10) {
+      currentArrayLightPosition = 0;
+    }
+    lastLight = photocellArray[(currentArrayLightPosition == 0) ? 9 : currentArrayLightPosition - 1];
+    ledValue = map(photocellValue, 0, 1023, 0, 255);
+    if (ledValue < 100) {
+      ledValue = 150;
+    }
+    if ((automatic == false) && (lastDistance < minDistance || lastDistance > maxDistance)) {
+      Serial.println("Warning distance below the expected levels");
+    }
+    if ((automatic == false) && (lastLight < minLight || lastLight > maxLight)) {
+      Serial.println("Warning light below the expected levels");
+    }
+
+    if ((lastLight < minLight || lastLight > maxLight || lastDistance < minDistance || lastDistance > maxDistance) && automatic == true) {
+      analogWrite(redPin, ledValue);
       analogWrite(greenPin, 0);
       analogWrite(bluePin, 0);
     } else {
       analogWrite(redPin, 0);
-      analogWrite(greenPin, 255);
+      analogWrite(greenPin, ledValue);
       analogWrite(bluePin, 0);
     }
   }
@@ -112,13 +143,13 @@ void loop() {
               }
             case 2:
               {
-                Serial.println("What should be the cloest distance until warning?");
+                Serial.println("What should be the closest distance until warning?");
                 clearSerial();
                 while (!Serial.available()) {}
                 minDistance = Serial.parseInt();
                 Serial.println("Minimum distance must be >: ");
                 Serial.println(minDistance);
-                Serial.println("What should be the cloest distance until warning?");
+                Serial.println("What should be the furthest distance until warning?");
                 clearSerial();
                 while (!Serial.available()) {}
                 maxDistance = Serial.parseInt();
@@ -134,8 +165,24 @@ void loop() {
               }
             case 3:
               {
-                Serial.println("Sunt in 1.3");
-                Serial.println();
+                Serial.println("What should be the lowest light level until warning?");
+                clearSerial();
+                while (!Serial.available()) {}
+                minLight = Serial.parseInt();
+                Serial.println("Light distance must be >: ");
+                Serial.println(minLight);
+                Serial.println("What should be the highest light level distance until warning?");
+                clearSerial();
+                while (!Serial.available()) {}
+                maxLight = Serial.parseInt();
+                Serial.println("Max light must be <: ");
+                Serial.println(maxLight);
+                if (maxLight <= minLight) {
+                  Serial.println("MAX LIGH  MUST BE > MIN LIGHT REVERTING BACK TO DEFAULT VALUES");
+                  minLight = 100;
+                  maxLight = 500;
+                }
+                printFirst();
                 break;
               }
             case 4:
@@ -160,11 +207,16 @@ void loop() {
                 if (reset == 5) {
                   //reset all the values to the standard;
                   minDistance = 10;
+                  maxDistance = 40;
+                  minLight = 100;
+                  maxLight = 500;
                   for (int i = 0; i < 10; i++) {
                     distanceArray[i] = 0;
+                    photocellArray[i] = 0;
                     Serial.print(" ");
                   }
                   lastDistance = 11;
+                  lastLight = 111;
                   samplingInterval = 1000;
                 }
 
@@ -188,6 +240,7 @@ void loop() {
             case 1:
               {
                 Serial.println(distanceArray[arrayIndex]);
+                Serial.println(photocellArray[currentArrayLightPosition]);
                 printThird();
                 break;
               }
@@ -200,7 +253,13 @@ void loop() {
                 Serial.print(minDistance);
                 Serial.print(", Max Distance: ");
                 Serial.println(maxDistance);
+                Serial.println("Threshold values for light sensor are: ");
+                Serial.print("Min light: ");
+                Serial.print(minLight);
+                Serial.print(", Max Light: ");
+                Serial.println(maxLight);
                 Serial.println();
+
                 printThird();
                 break;
               }
@@ -213,7 +272,12 @@ void loop() {
                   Serial.print(" ");
                 }
                 Serial.println(" ");
-
+                Serial.println("Photocell Array:");
+                for (int i = 0; i < 10; i++) {
+                  Serial.print(photocellArray[i]);
+                  Serial.print(" ");
+                }
+                Serial.println();
                 printThird();
                 break;
               }
@@ -239,8 +303,10 @@ void loop() {
               }
             case 2:
               {
-                Serial.println("Sunt in 4.2");
-                Serial.println();
+                Serial.println("State has changed");
+                automatic = !automatic;
+                Serial.println("Currently the statie is: ");
+                Serial.println(automatic);
                 printFourth();
                 break;
               }
