@@ -74,18 +74,17 @@ void loop() {
     if ((automatic == false) && (lastLight < minLight || lastLight > maxLight)) {
       Serial.println("Warning light below the expected levels");
     }
-  if(automatic == true){
-    if ((lastLight < minLight || lastLight > maxLight || lastDistance < minDistance || lastDistance > maxDistance)) {
-      analogWrite(redPin, ledValue);
-      analogWrite(greenPin, 0);
-      analogWrite(bluePin, 0);
-    } else {
-      analogWrite(redPin, 0);
-      analogWrite(greenPin, ledValue);
-      analogWrite(bluePin, 0);
+    if (automatic == true) {
+      if ((lastLight < minLight || lastLight > maxLight || lastDistance < minDistance || lastDistance > maxDistance)) {
+        analogWrite(redPin, ledValue);
+        analogWrite(greenPin, 0);
+        analogWrite(bluePin, 0);
+      } else {
+        analogWrite(redPin, 0);
+        analogWrite(greenPin, ledValue);
+        analogWrite(bluePin, 0);
+      }
     }
-  }
-
   }
   if (Serial.available() > 0) {
     value = Serial.read() - 48;
@@ -220,6 +219,9 @@ void loop() {
                   lastDistance = 11;
                   lastLight = 111;
                   samplingInterval = 1000;
+                  analogWrite(redPin, 0);
+                  analogWrite(greenPin, 0);
+                  analogWrite(bluePin, 0);
                 }
 
                 state = 0;
