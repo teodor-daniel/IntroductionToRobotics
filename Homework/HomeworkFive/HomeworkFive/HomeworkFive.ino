@@ -16,7 +16,7 @@ int minDistance = 10;  //testvalue
 int maxDistance = 40;
 int reset;
 boolean automatic = true;
-
+int red, green, blue;
 int lastLight;
 const int photocellPin = A0;
 int photocellValue = 0;
@@ -24,8 +24,8 @@ int ledValue = 0;
 
 int photocellArray[10];
 int currentArrayLightPosition = 0;
-int minLight = 100;
-int maxLight = 400;
+int minLight = 50;
+int maxLight = 300;
 void setup() {
   Serial.begin(9600);
   pinMode(trigPin, OUTPUT);
@@ -74,8 +74,8 @@ void loop() {
     if ((automatic == false) && (lastLight < minLight || lastLight > maxLight)) {
       Serial.println("Warning light below the expected levels");
     }
-
-    if ((lastLight < minLight || lastLight > maxLight || lastDistance < minDistance || lastDistance > maxDistance) && automatic == true) {
+  if(automatic == true){
+    if ((lastLight < minLight || lastLight > maxLight || lastDistance < minDistance || lastDistance > maxDistance)) {
       analogWrite(redPin, ledValue);
       analogWrite(greenPin, 0);
       analogWrite(bluePin, 0);
@@ -84,6 +84,8 @@ void loop() {
       analogWrite(greenPin, ledValue);
       analogWrite(bluePin, 0);
     }
+  }
+
   }
   if (Serial.available() > 0) {
     value = Serial.read() - 48;
@@ -296,9 +298,41 @@ void loop() {
           switch (value) {
             case 1:
               {
-                Serial.println("Sunt in 4.1");
-                Serial.println();
+                if (automatic != true) {
+                  clearSerial();
+                  Serial.print("Enter the Red value (0-255): ");
+                  while (!Serial.available()) {}
+                  red = Serial.parseInt();
+                  clearSerial();
+
+                  Serial.print("Enter the Green value (0-255): ");
+                  while (!Serial.available()) {}
+                  green = Serial.parseInt();
+                  clearSerial();
+
+                  Serial.print("Enter the Blue value (0-255): ");
+                  while (!Serial.available()) {}
+                  blue = Serial.parseInt();
+
+                  red = constrain(red, 0, 255);
+                  green = constrain(green, 0, 255);
+                  blue = constrain(blue, 0, 255);
+                  Serial.print("Selected RGB values: ");
+                  Serial.print("Red: ");
+                  Serial.print(red);
+                  Serial.print(", Green: ");
+                  Serial.print(green);
+                  Serial.print(", Blue: ");
+                  Serial.println(blue);
+
+                  analogWrite(redPin, red);
+                  analogWrite(greenPin, green);
+                  analogWrite(bluePin, blue);
+                } else {
+                  Serial.println("To set the light you must deactivate the auto system");
+                }
                 printFourth();
+
                 break;
               }
             case 2:
