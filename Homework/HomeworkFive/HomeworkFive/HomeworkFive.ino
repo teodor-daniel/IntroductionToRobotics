@@ -1,3 +1,4 @@
+#include <EEPROM.h>
 int value = 0;
 int state = 0;
 int samplingInterval = 1000;
@@ -243,8 +244,17 @@ void loop() {
           switch (value) {
             case 1:
               {
+                Serial.println("Enter 5 to stop reading values");
+                while (Serial.available() == 0) {
+                }
+                int enteredNumber = Serial.parseInt();
+                if (enteredNumber != 5) {
+                  return;
+                }
                 Serial.println(distanceArray[arrayIndex]);
                 Serial.println(photocellArray[currentArrayLightPosition]);
+
+                // Call the printThird function
                 printThird();
                 break;
               }
