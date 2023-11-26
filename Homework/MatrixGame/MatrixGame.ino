@@ -61,6 +61,8 @@ const byte moveInterval = 100;
 unsigned long long lastMoved = 0;
 bool matrixChanged = true;
 
+int xLast;
+int yLast;
 void setup() {
   Serial.begin(9600);
   lc.shutdown(0, false);
@@ -83,11 +85,20 @@ void setup() {
 
 void loop() {
   if (millis() - lastMoved >= moveInterval) {
-    updatePositions();
+    xLast = xPos;
+    yLast = yPos;
+  updatePositions();
+  if(xLast != xPos || yLast != yPos &&){
+      Serial.print("X: ");
+      Serial.println(xPos);
+      Serial.print("Y: ");
+      Serial.println(yPos);
+  }
+    
     lastMoved = millis();
   }
-  Serial.print("selectedMap = ");
-  Serial.println(selectedMap);
+
+
 
   if (matrixChanged) {
     updateMatrix();
