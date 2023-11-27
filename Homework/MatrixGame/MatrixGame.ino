@@ -14,38 +14,58 @@ LedControl lc = LedControl(dinPin, clockPin, loadPin, 1);
 int selectedMap = 0;
 byte matrixBrightness = 2;
 
-const int numMaps = 3;  // Number of matrix maps to do more and select random 
+const int numMaps = 5;  // Number of matrix maps to do more and select random 
 byte matrixMap[numMaps][8][8] = {
   {
     {0, 0, 0, 0, 0, 0, 0, 0},
-    {1, 0, 0, 1, 0, 1, 0, 0},
-    {0, 1, 0, 0, 0, 1, 0, 0},
-    {0, 1, 0, 1, 0, 1, 0, 0},
-    {0, 1, 0, 0, 0, 1, 0, 0},
-    {0, 1, 0, 1, 0, 1, 0, 0},
-    {0, 0, 0, 0, 0, 0, 1, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0, 0},
+    {1, 0, 1, 1, 1, 1, 1, 0},
+    {0, 1, 0, 1, 0, 0, 1, 0},
     {0, 0, 0, 0, 0, 0, 0, 0}
   },
   {
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 1, 0, 1, 0, 1, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 1, 0, 1, 0, 1, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 1, 0, 1, 0, 1, 0, 0},
-    {0, 0, 0, 0, 0, 0, 1, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0}
-  },
-  {
-    {0, 1, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 1, 0, 1, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 1, 0, 1, 0, 0},
-    {0, 1, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 1, 0, 1, 0, 0},
+    {0, 0, 0, 1, 0, 1, 0, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 1},
     {0, 1, 0, 0, 0, 0, 1, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0}
-  }
+    {1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 0, 0, 0, 0, 0, 0, 1},
+    {0, 1, 1, 1, 1, 1, 1, 0}
+  },
+  {
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 1, 1, 0, 0, 0, 0},
+    {0, 0, 1, 1, 1, 0, 0, 0},
+    {0, 0, 0, 1, 1, 1, 0, 1},
+    {0, 0, 0, 0, 1, 1, 0, 1},
+    {0, 0, 0, 0, 0, 0, 1, 0},
+    {0, 0, 0, 0, 1, 1, 0, 1}
+  },
+{
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 1, 1, 1, 1, 1, 1, 0},
+    {0, 1, 0, 1, 1, 0, 1, 0},
+    {0, 0, 0, 1, 1, 0, 1, 0},
+    {0, 0, 0, 1, 1, 0, 0, 0},
+    {0, 0, 0, 1, 1, 0, 0, 0},
+    {0, 0, 0, 1, 1, 0, 0, 0}
+},
+{
+    {0, 0, 0, 1, 1, 1, 0, 0},
+    {0, 0, 0, 1, 1, 1, 0, 0},
+    {0, 0, 1, 1, 1, 1, 1, 0},
+    {0, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 0},
+    {1, 0, 1, 0, 0, 0, 1, 0},
+    {1, 0, 1, 0, 0, 0, 1, 0},
+    {1, 0, 1, 1, 1, 1, 1, 0}
+}
 };
 
 byte matrixSize = 8;
@@ -182,10 +202,12 @@ void updatePositions() {
   }
 
   if (yValue < minThreshold && newYPos < matrixSize - 1 && hasMoved == false) {
-    newYPos++;    hasMoved = true;
+    newYPos++;
+    hasMoved = true;
 
   } else if (yValue > maxThreshold && newYPos > 0 && hasMoved == false) {
-    newYPos--;    hasMoved = true;
+    newYPos--;
+    hasMoved = true;
 
   }
 
@@ -222,4 +244,16 @@ void blinkFast(byte x, byte y) {
     lastBlinkTime = millis();
   }
 }
+//here i could generate a random matrix but it seems more fun to have levels
+void generateRandomMap(byte matrix[8][8]) {
+  for (byte i = 0; i < matrixSize; ++i) {
+    for (byte j = 0; j < matrixSize; ++j) {
+      matrix[i][j] = random(2);  
+    }
+  }
+  matrix[0][0] = 0;
+  matrix[1][0] = 0; //to be able to escape any random generated levels you need at least 3 spaces
+  matrix[2][0] = 0;
+}
+
 
