@@ -14,7 +14,7 @@ LedControl lc = LedControl(dinPin, clockPin, loadPin, 1);
 int selectedMap = 0;
 byte matrixBrightness = 2;
 
-const int numMaps = 3;  // Number of matrix maps
+const int numMaps = 3;  // Number of matrix maps to do more and select random 
 byte matrixMap[numMaps][8][8] = {
   {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -69,35 +69,84 @@ void setup() {
   lc.setIntensity(0, matrixBrightness);
   lc.clearDisplay(0);
   pinMode(pinSW, INPUT_PULLUP);
-  // Read the selected map from EEPROM and increment by 1
   selectedMap = EEPROM.read(0);
   selectedMap = (selectedMap + 1) % numMaps;
-  EEPROM.write(0, selectedMap);  // Save the updated selected map to EEPROM
+  EEPROM.write(0, selectedMap); 
 
   Serial.println(selectedMap);
 
-  // Initialize the starting position of the LED
   matrixMap[selectedMap][xPos][yPos] = 1;
 
-  // Update the LED matrix display
   updateMatrix();
 }
 
+  boolean buttonState = false;
+  boolean exist = false;
+  int xBlink = -1;
+  int yBlink = -1;
+ int lastPositionSetTime;
 void loop() {
+  boolean currentButtonState = digitalRead(pinSW);
+
+  if (currentButtonState == LOW) {
+    buttonState = !buttonState;
+  }
+
   if (millis() - lastMoved >= moveInterval) {
     xLast = xPos;
     yLast = yPos;
-  updatePositions();
-  if(xLast != xPos || yLast != yPos &&){
+    updatePositions();
+
+    if ((xLast != xPos || yLast != yPos) && buttonState == true) {
       Serial.print("X: ");
-      Serial.println(xPos);
+      Serial.println(xLast);
       Serial.print("Y: ");
-      Serial.println(yPos);
-  }
-    
+      Serial.println(yLast);
+
+      matrixMap[selectedMap][xLast][yLast] = 1;
+      lc.setLed(1, xLast, yLast, matrixMap[selectedMap][xLast][yLast]);
+
+      lastPositionSetTime = millis();
+
+      exist = true;
+      xBlink = xLast;
+      yBlink = yLast;
+      buttonState = false;
+    }
     lastMoved = millis();
   }
 
+  if (exist) {
+    blinkFast(xBlink, yBlink);
+  }
+
+if (exist && millis() - lastPositionSetTime >= 3000) {
+    matrixMap[selectedMap][xBlink][yBlink] = 0;
+    lc.setLed(1, xBlink, yBlink, matrixMap[selectedMap][xBlink][yBlink]);
+
+    if (xBlink > 0) {
+      matrixMap[selectedMap][xBlink - 1][yBlink] = 0;
+      lc.setLed(1, xBlink - 1, yBlink, matrixMap[selectedMap][xBlink - 1][yBlink]);
+    }
+
+    if (xBlink < (8 - 1)) {
+      matrixMap[selectedMap][xBlink + 1][yBlink] = 0;
+      lc.setLed(1, xBlink + 1, yBlink, matrixMap[selectedMap][xBlink + 1][yBlink]);
+    }
+
+    if (yBlink > 0) {
+      matrixMap[selectedMap][xBlink][yBlink - 1] = 0;
+      lc.setLed(1, xBlink, yBlink - 1, matrixMap[selectedMap][xBlink][yBlink - 1]);
+    }
+
+    if (yBlink < (8 - 1)) {
+      matrixMap[selectedMap][xBlink][yBlink + 1] = 0;
+      lc.setLed(1, xBlink, yBlink + 1, matrixMap[selectedMap][xBlink][yBlink + 1]);
+    }
+
+    exist = false;
+    updateMatrix();
+}
 
 
   if (matrixChanged) {
@@ -105,7 +154,6 @@ void loop() {
     matrixChanged = false;
   }
 
-  // Call blink function for the current position
   blink(xPos, yPos);
 }
 
@@ -152,17 +200,25 @@ void updatePositions() {
   }
 }
 
-void blink(byte x, byte y) {
+void blink(byte x, byte y ) {
   static unsigned long lastBlinkTime = 0;
   static bool isOn = true;
-  const unsigned long blinkInterval = 400; // Adjust the blink interval as needed
-
+  static unsigned blinkInterval = 400;
   if (millis() - lastBlinkTime >= blinkInterval) {
-    // Toggle the blink state
     isOn = !isOn;
     lc.setLed(0, x, y, isOn);
     
-    // Update the last blink time
+    lastBlinkTime = millis();
+  }
+}
+void blinkFast(byte x, byte y) {
+  static unsigned long lastBlinkTime = 0;
+  static bool isOn = true;
+  static unsigned blinkInterval = 200;
+  if (millis() - lastBlinkTime >= blinkInterval) {
+    isOn = !isOn;
+    lc.setLed(0, x, y, isOn);
+    
     lastBlinkTime = millis();
   }
 }
