@@ -7,7 +7,7 @@ const int loadPin = 10;
 //controller
 const int xPin = A0;
 const int yPin = A1;
-const int pinSW = 7;
+const int pinSW = 2;
 
 boolean lastButtonState = false;
 
@@ -73,7 +73,7 @@ byte xPos = 0;
 byte yPos = 0;
 byte xLastPos = 0;
 byte yLastPos = 0;
-const int buzzerPin = 9; 
+const int buzzerPin = 3; 
 const int minThreshold = 200;
 const int maxThreshold = 600;
 const int debounceDelay = 50; 
