@@ -215,8 +215,8 @@ void chooseDifficulty() {
   lcd.clear();
   lcd.print("Difficulty:");
   boolean exitThis = false;
-  int selectedDifficulty = 1; // Default value
-  while (exitThis == false) { // Use A2 instead of swPin
+  int selectedDifficulty = 1; 
+  while (exitThis == false) { 
     int joyValue = analogRead(xPin);
      if(!digitalRead(joyStickBtn)) {
       exitThis = true;
@@ -250,9 +250,8 @@ void chooseDifficulty() {
     }
   
 
-  // At this point, the user has pressed the button to confirm the selected difficulty.
-  // You can use the 'selectedDifficulty' variable as needed.
-  delay(500); // Optional delay for stability
+
+  delay(500); 
 }
 
 
