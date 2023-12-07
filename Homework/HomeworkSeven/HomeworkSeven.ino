@@ -9,6 +9,7 @@ const byte d7Pin = 4;
 
 const int xPin = A0;
 const int swPin = 2;
+const int joyStickBtn = A2;
 const int minThreshold = 300;
 const int maxThreshold = 600;
 const int debounceDelay = 50;
@@ -40,6 +41,7 @@ void setup() {
   Serial.begin(9600);
   lcd.begin(16, 2);
   pinMode(swPin, INPUT_PULLUP);
+  pinMode(joyStickBtn, INPUT_PULLUP); 
   lcd.print("Boomber Man");
   lcd.setCursor(0, 1);
   lcd.print("By Teodor");
@@ -135,7 +137,7 @@ void startGame() {
 
 void handleGameOptions() {
   lcd.clear();
-  subMenu = 1;
+  subMenu = 4;
   exitMenu = false;
   displayGameOptions();
   
@@ -169,8 +171,11 @@ void handleGameOptions() {
 
 void displayGameOptions() {
   if (subMenu < 1) subMenu = 2;
-  if (subMenu > 2) subMenu = 1;
-
+  if (subMenu > 2 && subMenu != 4) {
+    subMenu = 1;
+  }
+  if(subMenu > 4) subMenu = 1;
+  
   lcd.clear();
 
   switch (subMenu) {
@@ -190,15 +195,65 @@ void displayGameOptions() {
 void executeSubMenuAction() {
   switch (subMenu) {
     case 1:
-      lcd.print("Ha");
+      chooseDifficulty();
       break;
     case 2:
       exitMenu = true;
+      break;
+    case 4:
+      lcd.clear();
+      lcd.print("Loading...");
+      delay(400);
+      subMenu =1;
       break;
   }
 }
 
 
+
+void chooseDifficulty() {
+  lcd.clear();
+  lcd.print("Difficulty:");
+  boolean exitThis = false;
+  int selectedDifficulty = 1; // Default value
+  while (exitThis == false) { // Use A2 instead of swPin
+    int joyValue = analogRead(xPin);
+     if(!digitalRead(joyStickBtn)) {
+      exitThis = true;
+      }
+    if (joyValue < minThreshold) {
+      selectedDifficulty++;
+      if (selectedDifficulty > 10) {
+        selectedDifficulty = 10;
+      }
+      lcd.setCursor(0, 1);
+      lcd.setCursor(0, 1);
+      lcd.print(selectedDifficulty);
+      delay(debounceDelay);
+      while (analogRead(xPin) < minThreshold);
+    }
+
+    if (joyValue > maxThreshold) {
+      selectedDifficulty--;
+      if (selectedDifficulty < 1) {
+        selectedDifficulty = 1;
+      }
+      lcd.setCursor(0, 1);
+      lcd.setCursor(0, 1);
+      
+      lcd.print(selectedDifficulty);
+      delay(debounceDelay);
+      while (analogRead(xPin) > maxThreshold);
+
+    }
+
+    }
+  
+
+  // At this point, the user has pressed the button to confirm the selected difficulty.
+  // You can use the 'selectedDifficulty' variable as needed.
+  delay(500); // Optional delay for stability
+}
 
 
 
