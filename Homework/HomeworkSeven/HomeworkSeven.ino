@@ -60,6 +60,18 @@ byte matrixMap[numMaps][8][8] = {
     {1, 0, 1, 1, 1, 1, 1, 0}
 }
 };
+
+byte customChar[8] = {
+	0b01110,
+	0b01110,
+	0b00100,
+	0b11111,
+	0b00100,
+	0b01110,
+	0b01010,
+	0b01010
+};
+
 byte matrixSize = 8;
 byte xPos = 0;
 byte yPos = 0;
@@ -105,6 +117,7 @@ int matrixBrightness;
 int lcdBrightness;
 int currentMenu = 1;
 int subMenu = 1;
+int lives = 3;
 bool exitMenu = false;
 
 bool exitGame = false;
@@ -179,7 +192,7 @@ void loop() {
 
 }
 
-//Update display based on the joystick inpus.
+//Update display based on the joystick inpus
 void updateMenu() {
   if (currentMenu < menuStart) currentMenu = menuCredits;
   if (currentMenu > menuCredits) currentMenu = menuStart;
@@ -237,13 +250,25 @@ void executeAction() {
 
 //Start game
 void startGame() {
+selectedMap = (selectedMap + 1) % numMaps;
+lives = selectedDifficulty;
 lcd.clear();
+lcd.print("Loading...");
+delay(400);
+lcd.clear();
+lcd.createChar(0, customChar);
 exitGame = false;
 while(exitGame == false){
- boolean currentButtonState = digitalRead(pinSW);
+
+  for (int i = 0; i < lives; i++) {
+    lcd.setCursor(i, 0);  
+    lcd.write((uint8_t) 0);  
+  }
+  boolean currentButtonState = digitalRead(pinSW);
   if(!digitalRead(joyStickBtn)) {
       exitGame = true;
       }
+
   if (currentButtonState != lastButtonState) {
     lastButtonPressTime = millis();
   }
@@ -261,11 +286,7 @@ while(exitGame == false){
     updatePositions();
     
     if ((xLast != xPos || yLast != yPos) && buttonState == true) {
-      //debuging
-      // Serial.print("X: ");
-      // Serial.println(xLast);
-      // Serial.print("Y: ");
-      // Serial.println(yLast);
+
       matrixMap[selectedMap][xLast][yLast] = 1;
       lc.setLed(1, xLast, yLast, matrixMap[selectedMap][xLast][yLast]);
 
@@ -295,7 +316,14 @@ while(exitGame == false){
         if (xPos == xBlink - 1 && yBlink == yPos) {
           yPos = 0;
           xPos = 0;
+          lives--;
+          xLast = 1;
+          yLast = 1;
+          xBlink = 3;
+          xBlink = 3;
+          exist = false;
         }
+
       }
 
       if (xBlink < (8 - 1)) {
@@ -305,6 +333,14 @@ while(exitGame == false){
         if (xPos == xBlink + 1 && yBlink == yPos) {
           yPos = 0;
           xPos = 0;
+          lives--;
+          xLast = 1;
+          yLast = 1;
+          xBlink = 3;
+          xBlink = 3;
+          exist = false;
+          lcd.clear();
+
         }
       }
 
@@ -315,6 +351,13 @@ while(exitGame == false){
         if (xPos == xBlink && yBlink - 1 == yPos) {
           yPos = 0;
           xPos = 0;
+          lives--;
+          xLast = 1;
+          yLast = 1;
+          xBlink = 3;
+          xBlink = 3;
+          exist = false;
+          lcd.clear();
         }
       }
 
@@ -325,12 +368,22 @@ while(exitGame == false){
         if (xPos == xBlink && yBlink + 1 == yPos) {
           yPos = 0;
           xPos = 0;
+          lives--;
+          xLast = 1;
+          yLast = 1;
+          xBlink = 3;
+          xBlink = 3;
+          exist = false;
+          lcd.clear();
+
         }
       }
 
       exist = false;
-      playBuzzer();
+      // playBuzzer();
       updateMatrix();
+      lastPositionSetTime = 0;
+
     }
 
     if (matrixChanged) {
@@ -338,8 +391,25 @@ while(exitGame == false){
       matrixChanged = false;
     }
     blink(xPos, yPos);
+    if(lives == 0){
+      exitGame = true;
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("YOU DIED");
+        delay(2000);           
+      }
+  if (areAllLedsOff(matrixMap[selectedMap], xPos, yPos)) {
+        exitGame = true;
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("YOU Win");
+        delay(2000);  
+
+      }
+  
   }
-  EEPROM.write(3, selectedMap); 
+
+  // EEPROM.write(3, selectedMap); 
   lc.clearDisplay(0);
 
   
@@ -581,15 +651,15 @@ void chooseLightLevelMatrix(){
 void matrixLight() {
   for (int row = 0; row < matrixSize; row++) {
     for (int col = 0; col < matrixSize; col++) {
-      lc.setLed(0, row, col, 1);  // Turn on all LEDs
+      lc.setLed(0, row, col, 1);
     }
   }
 
-  delay(2000);  // Keep the matrix on for 500 milliseconds
+  delay(2000);  
 
   for (int row = 0; row < matrixSize; row++) {
     for (int col = 0; col < matrixSize; col++) {
-      lc.setLed(0, row, col, 0);  // Turn off all LEDs
+      lc.setLed(0, row, col, 0); 
     }
   }
 }
@@ -715,22 +785,22 @@ void showCredits() {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Game made by Balan Teodor, BomberMan");
-  delay(2000);  // Initial delay before scrolling
+  delay(2000); 
 
   for (int i = 0; i < 33; ++i) {
     lcd.scrollDisplayLeft();
-    delay(250);  // Adjust the delay to control the scrolling speed
+    delay(250);  
   }
   delay(450);
 
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Introduction to Robotics on GitHub.");
-  delay(2000);  // Initial delay before scrolling
+  delay(2000);  
 
   for (int i = 0; i < 36; ++i) {
     lcd.scrollDisplayLeft();
-    delay(250);  // Adjust the delay to control the scrolling speed
+    delay(250);  
   }
 
   delay(450);  // Delay after displaying the credits
@@ -748,7 +818,10 @@ void updateMatrix() {
 }
 
 void playBuzzer() {
-  tone(buzzerPin, 2000, 500);  
+  digitalWrite(buzzerPin, HIGH);
+  delayMicroseconds(1000); 
+  digitalWrite(buzzerPin, LOW);
+  delayMicroseconds(1000); 
 }
 
 void updatePositions() {
@@ -799,7 +872,6 @@ void blink(byte x, byte y ) {
     lastBlinkTime = millis();
   }
 }
-//i know i should use blink with parameers but it was easier for me to change it here i also wanted to add the logic here but i let it in loop
 void blinkFast(byte x, byte y) {
   static unsigned long lastBlinkTime = 0;
   static bool isOn = true;
@@ -822,6 +894,19 @@ void generateRandomMap(byte matrix[8][8]) {
   matrix[1][0] = 0; //to be able to escape any random generated levels you need at least 3 spaces
   matrix[2][0] = 0;
 }
+
+
+bool areAllLedsOff(byte matrix[8][8], byte ignoreX, byte ignoreY) {
+  for (int row = 0; row < 8; row++) {
+    for (int col = 0; col < 8; col++) {
+      if ((row != ignoreX || col != ignoreY) && matrix[row][col] != 0) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 
 
 
