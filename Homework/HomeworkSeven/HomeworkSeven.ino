@@ -1,7 +1,6 @@
 #include <LiquidCrystal.h>
 #include <EEPROM.h>
 #include "LedControl.h"
-
 const int dinPin = 12;
 const int clockPin = 11;
 const int loadPin = 10;
@@ -20,14 +19,14 @@ byte matrixMap[numMaps][8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0}
   },
   {
-    {0, 0, 0, 1, 0, 1, 0, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 1},
-    {0, 1, 0, 0, 0, 0, 1, 0},
-    {1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 1},
-    {0, 1, 1, 1, 1, 1, 1, 0}
+    {0, 0, 0, 0, 0, 0, 0, 1},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0}
   },
   {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -37,27 +36,27 @@ byte matrixMap[numMaps][8][8] = {
     {0, 0, 0, 1, 1, 1, 0, 1},
     {0, 0, 0, 0, 1, 1, 0, 1},
     {0, 0, 0, 0, 0, 0, 1, 0},
-    {0, 0, 0, 0, 1, 1, 0, 1}
+    {0, 0, 0, 0, 1, 1, 0, 0}
   },
 {
     {0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 1, 1, 1, 1, 1, 1, 0},
-    {0, 1, 0, 1, 1, 0, 1, 0},
-    {0, 0, 0, 1, 1, 0, 1, 0},
-    {0, 0, 0, 1, 1, 0, 0, 0},
-    {0, 0, 0, 1, 1, 0, 0, 0},
+    {0, 1, 0, 1, 0, 1, 0, 0},
+    {0, 0, 0, 1, 0, 0, 0, 0},
+    {0, 0, 0, 0, 1, 0, 0, 0},
+    {0, 0, 0, 1, 0, 0, 0, 0},
+    {0, 0, 0, 0, 1, 0, 0, 0},
     {0, 0, 0, 1, 1, 0, 0, 0}
 },
 {
-    {0, 0, 0, 1, 1, 1, 0, 0},
-    {0, 0, 0, 1, 1, 1, 0, 0},
-    {0, 0, 1, 1, 1, 1, 1, 0},
-    {0, 1, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 1, 0},
-    {1, 0, 1, 0, 0, 0, 1, 0},
-    {1, 0, 1, 0, 0, 0, 1, 0},
-    {1, 0, 1, 1, 1, 1, 1, 0}
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0}
 }
 };
 
@@ -88,7 +87,7 @@ boolean buttonState = false;
 boolean exist = false;
 int xBlink = -1;
 int yBlink = -1;
-int lastPositionSetTime;
+unsigned long lastPositionSetTime;
 
 int selectedMap = 0;
 const byte rsPin = 9;
@@ -104,7 +103,7 @@ const int pinSW = 2;
 const int joyStickBtn = A2;
 const int minThreshold = 300;
 const int maxThreshold = 600;
-const int debounceDelay = 50;
+const int debounceDelay = 10;
 
 const int menuStart = 1;
 const int menuGameOptions = 2;
@@ -121,8 +120,10 @@ int lives = 3;
 bool exitMenu = false;
 
 bool exitGame = false;
-
-// Function prototypes
+bool shownHighScore = false;
+int highScore = 0;
+int levels = 0;
+//All the functions
 void updateMenu();
 void executeAction();
 void startGame();
@@ -132,7 +133,26 @@ void handleLcdOptions();
 void showCredits();
 void executeGameMenuAction();
 void displayGameOptions();
-
+void setup();
+void loop();
+void updateMatrix();
+void playBuzzer();
+void updatePositions();
+void blink(byte x, byte y);
+void blinkFast(byte x, byte y);
+void generateRandomMap(byte matrix[8][8]);
+bool areAllLedsOff(byte matrix[8][8], byte ignoreX, byte ignoreY);
+void chooseDifficulty();
+void chooseLightLevelMatrix();
+void matrixLight();
+void handleMatrixOptions();
+void displayMatrixOptions();
+void executeMatrixMenuAction();
+void chooseLightLevelLcd();
+void handleLcdOptions();
+void displayLcdOptions();
+void executeLcdMenuAction();
+void showCredits();
 void setup() {
   Serial.begin(9600);
   lcd.begin(16, 2);
@@ -141,12 +161,13 @@ void setup() {
   pinMode(joyStickBtn, INPUT_PULLUP); 
   pinMode(buzzerPin, OUTPUT);
 
+  highScore = EEPROM.read(4);
   lcdBrightness = EEPROM.read(2);
   analogWrite(Apin, lcdBrightness);  
 
-  lcd.print("Boomber Man");
+  lcd.print(F("Boomber Man"));
   lcd.setCursor(0, 1);
-  lcd.print("By Teodor");
+  lcd.print(F("By Teodor"));
   delay(1000);
   lcd.clear();
 
@@ -159,7 +180,6 @@ void setup() {
 //Matrix
   matrixMap[selectedMap][xPos][yPos] = 1;
   selectedMap = EEPROM.read(3);
-  selectedMap = (selectedMap + 1) % numMaps;
   EEPROM.write(3, selectedMap); 
   updateMenu();
 }
@@ -201,27 +221,27 @@ void updateMenu() {
 
   switch (currentMenu) {
     case menuStart:
-      lcd.print(">Start");
+      lcd.print(F(">Start"));
       lcd.setCursor(0, 1);
-      lcd.print(" Game options");
+      lcd.print(F(" Game options"));
       break;
     case menuGameOptions:
-      lcd.print(" Start");
+      lcd.print(F(" Start"));
       lcd.setCursor(0, 1);
-      lcd.print(">Game options");
+      lcd.print(F(">Game options"));
       break;
     case menuMatrixOptions:
-      lcd.print(">Matrix options");
+      lcd.print(F(">Matrix options"));
       lcd.setCursor(0, 1);
-      lcd.print(" LCD options");
+      lcd.print(F(" LCD options"));
       break;
     case menuLcdOptions:
-      lcd.print(" Matrix options");
+      lcd.print(F(" Matrix options"));
       lcd.setCursor(0, 1);
-      lcd.print(">LCD options");
+      lcd.print(F(">LCD options"));
       break;
     case menuCredits:
-      lcd.print(">CREDITS");
+      lcd.print(F(">CREDITS"));
       break;
   }
 }
@@ -247,10 +267,9 @@ void executeAction() {
   }
 }
 
-
+int points = 0;
 //Start game
 void startGame() {
-selectedMap = (selectedMap + 1) % numMaps;
 lives = selectedDifficulty;
 lcd.clear();
 lcd.print("Loading...");
@@ -259,11 +278,30 @@ lcd.clear();
 lcd.createChar(0, customChar);
 exitGame = false;
 while(exitGame == false){
+  if(points > highScore){
+    EEPROM.write(4, points);
+    highScore = points;
+    if(shownHighScore == false){
+      lcd.clear();
+      lcd.print(F("You beat the:"));
+      lcd.setCursor(0,1);
+      lcd.print("HIGHSCORE!");
+      delay(2000);
+      lcd.clear();
+      shownHighScore = true;
+    }
 
+
+  }
   for (int i = 0; i < lives; i++) {
     lcd.setCursor(i, 0);  
     lcd.write((uint8_t) 0);  
   }
+  lcd.setCursor(0,1);
+  lcd.print("Points");
+  lcd.setCursor(8, 1);
+  lcd.print(points);
+
   boolean currentButtonState = digitalRead(pinSW);
   if(!digitalRead(joyStickBtn)) {
       exitGame = true;
@@ -304,14 +342,19 @@ while(exitGame == false){
       blinkFast(xBlink, yBlink);
     }
     
-    if (exist && millis() - lastPositionSetTime >= 3000) {
+    if (exist && millis() - lastPositionSetTime > 3000) {
+      
       matrixMap[selectedMap][xBlink][yBlink] = 0;
       lc.setLed(1, xBlink, yBlink, matrixMap[selectedMap][xBlink][yBlink]);
 
       if (xBlink > 0) {
         //destroy the walls
+        if(matrixMap[selectedMap][xBlink-1][yBlink] == 1){
+        points = points + 10/selectedDifficulty;
+        }
         matrixMap[selectedMap][xBlink - 1][yBlink] = 0;
         lc.setLed(1, xBlink - 1, yBlink, matrixMap[selectedMap][xBlink - 1][yBlink]);
+
       //you die if you stand too close to the bomb and you go back to spawn;
         if (xPos == xBlink - 1 && yBlink == yPos) {
           yPos = 0;
@@ -326,25 +369,31 @@ while(exitGame == false){
 
       }
 
-      if (xBlink < (8 - 1)) {
+    if (xBlink < (8 - 1)) {
+      if( matrixMap[selectedMap][xBlink + 1][yBlink] == 1){
+        points = points + 10/selectedDifficulty;
+
+        }
         matrixMap[selectedMap][xBlink + 1][yBlink] = 0;
         lc.setLed(1, xBlink + 1, yBlink, matrixMap[selectedMap][xBlink + 1][yBlink]);
 
         if (xPos == xBlink + 1 && yBlink == yPos) {
-          yPos = 0;
-          xPos = 0;
-          lives--;
-          xLast = 1;
-          yLast = 1;
-          xBlink = 3;
-          xBlink = 3;
-          exist = false;
-          lcd.clear();
-
+            yPos = 0;
+            xPos = 0;
+            lives--;
+            xLast = 1;
+            yLast = 1;
+            xBlink = 3;
+            yBlink = 3;  
+            exist = false;
+            lcd.clear();
         }
-      }
+    }
 
       if (yBlink > 0) {
+      if(matrixMap[selectedMap][xBlink][yBlink - 1] == 1){
+        points = points + 10/selectedDifficulty;
+        }
         matrixMap[selectedMap][xBlink][yBlink - 1] = 0;
         lc.setLed(1, xBlink, yBlink - 1, matrixMap[selectedMap][xBlink][yBlink - 1]);
 
@@ -362,6 +411,9 @@ while(exitGame == false){
       }
 
       if (yBlink < (8 - 1)) {
+        if(matrixMap[selectedMap][xBlink][yBlink + 1] == 1){
+        points = points + 10/selectedDifficulty;
+        }
         matrixMap[selectedMap][xBlink][yBlink + 1] = 0;
         lc.setLed(1, xBlink, yBlink + 1, matrixMap[selectedMap][xBlink][yBlink + 1]);
 
@@ -382,7 +434,6 @@ while(exitGame == false){
       exist = false;
       // playBuzzer();
       updateMatrix();
-      lastPositionSetTime = 0;
 
     }
 
@@ -390,20 +441,44 @@ while(exitGame == false){
       updateMatrix();
       matrixChanged = false;
     }
+    
     blink(xPos, yPos);
     if(lives == 0){
       exitGame = true;
+      bool exitThisThing = false;
         lcd.clear();
         lcd.setCursor(0, 0);
-        lcd.print("YOU DIED");
-        delay(2000);           
+        lcd.print(F("YOU DIED"));
+        delay(1000);
+        points = 0; 
+      while (exitThisThing == false){
+        while(!digitalRead(joyStickBtn)) {
+          exitThisThing = true;
+        }
+      }
+      lcd.clear();
+           
       }
   if (areAllLedsOff(matrixMap[selectedMap], xPos, yPos)) {
-        exitGame = true;
+        selectedMap++;
+        if(selectedMap > 5){
+          selectedMap = 0;
+        }
+        EEPROM.write(3, selectedMap);
+
         lcd.clear();
         lcd.setCursor(0, 0);
-        lcd.print("YOU Win");
-        delay(2000);  
+        lcd.print(F("YOU Win"));
+        delay(2000);
+        lcd.clear();
+        xPos = 0;
+        yPos = 0;
+        levels++;
+        updateMatrix();
+        if(levels == 3){
+          exitGame = true;
+        }
+
 
       }
   
@@ -461,9 +536,9 @@ void displayGameOptions() {
 
   switch (subMenu) {
     case 1:
-      lcd.print(">Difficulty");
+      lcd.print(F(">Difficulty"));
       lcd.setCursor(0, 1);
-      lcd.print(" Exit");
+      lcd.print(F(" Exit"));
       break;
     case 2:
       lcd.print(" Difficulty");
@@ -492,7 +567,7 @@ void executeGameMenuAction() {
 
 void chooseDifficulty() {
   lcd.clear();
-  lcd.print("Difficulty:");
+  lcd.print(F("Set Difficulty"));
   boolean exitThis = false;
   while (exitThis == false) { 
     int joyValue = analogRead(xPin);
@@ -504,7 +579,8 @@ void chooseDifficulty() {
       if (selectedDifficulty > 10) {
         selectedDifficulty = 10;
       }
-      lcd.setCursor(0, 1);
+      lcd.setCursor(0, 0);
+      lcd.print(F("Set Difficulty"));
       lcd.setCursor(0, 1);
       lcd.print(selectedDifficulty);
       delay(debounceDelay);
@@ -512,13 +588,14 @@ void chooseDifficulty() {
     }
 
     if (joyValue > maxThreshold) {
+      lcd.clear();
       selectedDifficulty--;
       if (selectedDifficulty < 1) {
         selectedDifficulty = 1;
       }
+        lcd.setCursor(0, 0);
+      lcd.print(F("Set Difficulty"));
       lcd.setCursor(0, 1);
-      lcd.setCursor(0, 1);
-      
       lcd.print(selectedDifficulty);
       delay(debounceDelay);
       while (analogRead(xPin) > maxThreshold);
@@ -606,10 +683,10 @@ void executeMatrixMenuAction(){
 
 void chooseLightLevelMatrix(){
   lcd.clear();
-  lcd.print("Brightness:");
+  lcd.print(F("Set Brightness"));
   boolean exitThis = false;
   while (exitThis == false) { 
-    int joyValue = analogRead(xPin);
+  int joyValue = analogRead(xPin);
      if(!digitalRead(joyStickBtn)) {
       exitThis = true;
       }
@@ -618,7 +695,8 @@ void chooseLightLevelMatrix(){
       if (matrixBrightness > 10) {
         matrixBrightness = 10;
       }
-      lcd.setCursor(0, 1);
+      lcd.setCursor(0, 0);
+      lcd.print(F("Set Brightness"));
       lcd.setCursor(0, 1);
       lcd.print(matrixBrightness);
       delay(debounceDelay);
@@ -626,13 +704,15 @@ void chooseLightLevelMatrix(){
     }
 
     if (joyValue > maxThreshold) {
+      lcd.clear();
       matrixBrightness--;
       if (matrixBrightness < 1) {
         matrixBrightness = 1;
       }
+      lcd.setCursor(0, 0);
+      lcd.print(F("Set Brightness"));
       lcd.setCursor(0, 1);
-      lcd.setCursor(0, 1);
-      
+  
       lcd.print(matrixBrightness);
       delay(debounceDelay);
       while (analogRead(xPin) > maxThreshold);
@@ -741,7 +821,7 @@ void executeLcdMenuAction(){
 
 void chooseLightLevelLcd(){
   lcd.clear();
-  lcd.print("Brightness:");
+  lcd.print(F("Set Brightness:"));
   boolean exitThis = false;
   while (exitThis == false) { 
     int joyValue = analogRead(xPin);
@@ -753,7 +833,8 @@ void chooseLightLevelLcd(){
       if (lcdBrightness > 1000) {
         lcdBrightness = 1000;
       }
-      lcd.setCursor(0, 1);
+      lcd.setCursor(0, 0);
+      lcd.print(F("Set Brightness"));
       lcd.setCursor(0, 1);
       lcd.print(lcdBrightness);
       delay(debounceDelay);
@@ -762,12 +843,13 @@ void chooseLightLevelLcd(){
 
     if (joyValue > maxThreshold) {
       lcdBrightness -= 100;
+      lcd.clear();
       if (lcdBrightness < 100) {
         lcdBrightness = 100;
       }
+      lcd.setCursor(0, 0);
+      lcd.print(F("Set Brightness"));
       lcd.setCursor(0, 1);
-      lcd.setCursor(0, 1);
-      
       lcd.print(lcdBrightness);
       delay(debounceDelay);
       while (analogRead(xPin) > maxThreshold);
@@ -777,7 +859,7 @@ void chooseLightLevelLcd(){
     }
   analogWrite(Apin, lcdBrightness);  
  
-  delay(500); 
+  delay(1000); 
 }
 
 //Credits
@@ -787,7 +869,7 @@ void showCredits() {
   lcd.print("Game made by Balan Teodor, BomberMan");
   delay(2000); 
 
-  for (int i = 0; i < 33; ++i) {
+  for (int i = 0; i < 20; ++i) {
     lcd.scrollDisplayLeft();
     delay(250);  
   }
@@ -798,12 +880,17 @@ void showCredits() {
   lcd.print("Introduction to Robotics on GitHub.");
   delay(2000);  
 
-  for (int i = 0; i < 36; ++i) {
+  for (int i = 0; i < 19; ++i) {
     lcd.scrollDisplayLeft();
     delay(250);  
   }
 
-  delay(450);  // Delay after displaying the credits
+  lcd.clear();
+  lcd.print(F("High Score:"));
+  lcd.setCursor(0, 1);
+  lcd.print(highScore);
+  delay(3500);
+
 }
 
 
@@ -825,39 +912,40 @@ void playBuzzer() {
 }
 
 void updatePositions() {
+  static bool hasMoved = false; // Declare as static
+
   int xValue = analogRead(xPin);
   int yValue = analogRead(yPin);
-  int hasMoved = false;
   byte newXPos = xPos;
   byte newYPos = yPos;
 
-  if (xValue < minThreshold && newXPos > 0 && hasMoved == false) {
+  if (xValue < minThreshold && newXPos > 0 && !hasMoved) {
     newXPos--;
     hasMoved = true;
-  } else if (xValue > maxThreshold && newXPos < matrixSize - 1 && hasMoved == false) {
-        newXPos++;
-        hasMoved = true;
-
+  } else if (xValue > maxThreshold && newXPos < matrixSize - 1 && !hasMoved) {
+    newXPos++;
+    hasMoved = true;
   }
 
-  if (yValue < minThreshold && newYPos < matrixSize - 1 && hasMoved == false) {
+  if (yValue < minThreshold && newYPos < matrixSize - 1 && !hasMoved) {
     newYPos++;
     hasMoved = true;
-
-  } else if (yValue > maxThreshold && newYPos > 0 && hasMoved == false) {
+  } else if (yValue > maxThreshold && newYPos > 0 && !hasMoved) {
     newYPos--;
     hasMoved = true;
-
   }
 
-  if (matrixMap[selectedMap][newXPos][newYPos] == 0) {
+  if (matrixMap[selectedMap][newXPos][newYPos] == 0 && hasMoved) {
     matrixChanged = true;
     matrixMap[selectedMap][xPos][yPos] = 0;
     matrixMap[selectedMap][newXPos][newYPos] = 1;
-    xLastPos = xPos;
-    yLastPos = yPos;
+    xLast = xPos;
+    yLast = yPos;
     xPos = newXPos;
     yPos = newYPos;
+  } else {
+    // Reset hasMoved if no movement occurred
+    hasMoved = false;
   }
 }
 
@@ -894,7 +982,6 @@ void generateRandomMap(byte matrix[8][8]) {
   matrix[1][0] = 0; //to be able to escape any random generated levels you need at least 3 spaces
   matrix[2][0] = 0;
 }
-
 
 bool areAllLedsOff(byte matrix[8][8], byte ignoreX, byte ignoreY) {
   for (int row = 0; row < 8; row++) {
