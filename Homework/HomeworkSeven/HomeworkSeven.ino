@@ -153,6 +153,7 @@ void handleLcdOptions();
 void displayLcdOptions();
 void executeLcdMenuAction();
 void showCredits();
+
 void setup() {
   Serial.begin(9600);
   lcd.begin(16, 2);

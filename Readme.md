@@ -24,6 +24,10 @@ Hey there, in my third year at the Faculty of Mathematics and Computer Science, 
 - 📝 Homework 6: In this assignment, the main focus was on recreating the classic Bomberman game in a retro arcade style using Arduino. The project utilizes an 8x8 matrix, a joystick for intuitive controls, and a buzzer for immersive audio feedback.
 
   - 📂 [File location](https://github.com/teodor-daniel1234/IntroductionToRobotics/tree/main/Homework/HomeworkSix)
+
+- 📝 Homework 7: In this assignment, the main focus was on recreating the classic Bomberman game (using a 8x8 led matrix) in a retro arcade style using Arduino and adding an lcd display for feedback and a menu, all controlled using a joystick.
+
+  - 📂 [File location](https://github.com/teodor-daniel1234/IntroductionToRobotics/tree/main/Homework/HomeworkSeven)
  
   
 
@@ -95,3 +99,13 @@ This project involved recreating the classic Bomberman arcade game. The 8x8 matr
 ### 📹 Video:
 - [Video Presentation](https://youtube.com/shorts/xtSW4jeLi24)
 
+
+## 🕹️💣🖥️ Homework 7 (WIP? might delete)
+### 🎯Task:
+This project involved recreating the classic Bomberman arcade game. I used a LCD display for the menu and for the game i used an 8x8 matrix
+### 📷Image of the Final Design:
+![FinalBuild](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkSeven/FinalBuild.jpeg)
+### ⚙️Code:
+- [SourceCode.ino](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkSeven/HomeworkSeven.ino)
+### 📹 Video:
+- [Video Presentation](still processing....)
