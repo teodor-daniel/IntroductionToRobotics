@@ -6,16 +6,16 @@ const int clockPin = 11;
 const int loadPin = 10;
 boolean lastButtonState = false;
 LedControl lc = LedControl(dinPin, clockPin, loadPin, 1);
-const int numMaps = 5;  // Number of matrix maps to do more and select random 
+const int numMaps = 3;  // Number of matrix maps to do more and select random 
 byte matrixMap[numMaps][8][8] = {
   {
     {0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 1, 0, 0, 0, 0, 0, 0},
-    {1, 0, 1, 1, 1, 1, 1, 0},
-    {0, 1, 0, 1, 0, 0, 1, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 1, 0, 1, 0, 1, 0},
+    {0, 0, 0, 1, 0, 0, 1, 0},
     {0, 0, 0, 0, 0, 0, 0, 0}
   },
   {
@@ -31,33 +31,13 @@ byte matrixMap[numMaps][8][8] = {
   {
     {0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 1, 1, 0, 0, 0, 0},
-    {0, 0, 1, 1, 1, 0, 0, 0},
-    {0, 0, 0, 1, 1, 1, 0, 1},
-    {0, 0, 0, 0, 1, 1, 0, 1},
-    {0, 0, 0, 0, 0, 0, 1, 0},
-    {0, 0, 0, 0, 1, 1, 0, 0}
-  },
-{
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 1, 0, 1, 0, 1, 0, 0},
-    {0, 0, 0, 1, 0, 0, 0, 0},
-    {0, 0, 0, 0, 1, 0, 0, 0},
-    {0, 0, 0, 1, 0, 0, 0, 0},
-    {0, 0, 0, 0, 1, 0, 0, 0},
-    {0, 0, 0, 1, 1, 0, 0, 0}
-},
-{
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0},
     {0, 1, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0}
-}
+  }
 };
 
 byte customChar[8] = {
@@ -88,7 +68,6 @@ boolean exist = false;
 int xBlink = -1;
 int yBlink = -1;
 unsigned long lastPositionSetTime;
-
 int selectedMap = 0;
 const byte rsPin = 9;
 const byte enPin = 8;
@@ -104,7 +83,6 @@ const int joyStickBtn = A2;
 const int minThreshold = 300;
 const int maxThreshold = 600;
 const int debounceDelay = 10;
-
 const int menuStart = 1;
 const int menuGameOptions = 2;
 const int menuMatrixOptions = 3;
@@ -118,7 +96,7 @@ int currentMenu = 1;
 int subMenu = 1;
 int lives = 3;
 bool exitMenu = false;
-
+int points = 0;
 bool exitGame = false;
 bool shownHighScore = false;
 int highScore = 0;
@@ -165,7 +143,6 @@ void setup() {
   highScore = EEPROM.read(4);
   lcdBrightness = EEPROM.read(2);
   analogWrite(Apin, lcdBrightness);  
-
   lcd.print(F("Boomber Man"));
   lcd.setCursor(0, 1);
   lcd.print(F("By Teodor"));
@@ -178,9 +155,12 @@ void setup() {
   lc.setIntensity(0, matrixBrightness);
   lc.clearDisplay(0);
 
-//Matrix
+ //Matrix
   matrixMap[selectedMap][xPos][yPos] = 1;
   selectedMap = EEPROM.read(3);
+  if(selectedMap > 2){
+    selectedMap = 0; 
+  }
   EEPROM.write(3, selectedMap); 
   updateMenu();
 }
@@ -253,6 +233,7 @@ void executeAction() {
     case menuStart:
       startGame();
       break;
+  //Here i put handleSettings that has exit, but also has all the handles expect credtis.
     case menuGameOptions:
       handleGameOptions();
       break;
@@ -268,225 +249,235 @@ void executeAction() {
   }
 }
 
-int points = 0;
 //Start game
 void startGame() {
-lives = selectedDifficulty;
-lcd.clear();
-lcd.print("Loading...");
-delay(400);
-lcd.clear();
-lcd.createChar(0, customChar);
-exitGame = false;
-while(exitGame == false){
-  if(points > highScore){
-    EEPROM.write(4, points);
-    highScore = points;
-    if(shownHighScore == false){
-      lcd.clear();
-      lcd.print(F("You beat the:"));
-      lcd.setCursor(0,1);
-      lcd.print("HIGHSCORE!");
-      delay(2000);
-      lcd.clear();
-      shownHighScore = true;
-    }
-
-
-  }
-  for (int i = 0; i < lives; i++) {
-    lcd.setCursor(i, 0);  
-    lcd.write((uint8_t) 0);  
-  }
-  lcd.setCursor(0,1);
-  lcd.print("Points");
-  lcd.setCursor(8, 1);
-  lcd.print(points);
-
-  boolean currentButtonState = digitalRead(pinSW);
-  if(!digitalRead(joyStickBtn)) {
-      exitGame = true;
+  lives = selectedDifficulty;
+  lcd.clear();
+  lcd.print("Loading...");
+  delay(400);
+  lcd.clear();
+  lcd.createChar(0, customChar);
+  exitGame = false;
+  while(exitGame == false){
+    if(points > highScore){
+      EEPROM.write(4, points);
+      highScore = points;
+      if(shownHighScore == false){
+        lcd.clear();
+        lcd.print(F("You beat the:"));
+        lcd.setCursor(0,1);
+        lcd.print("HIGHSCORE!");
+        delay(2000);
+        lcd.clear();
+        shownHighScore = true;
       }
 
-  if (currentButtonState != lastButtonState) {
-    lastButtonPressTime = millis();
-  }
-  if ((millis() - lastButtonPressTime) > debounceDelay) {
-    if (currentButtonState == LOW) {
-      buttonState = !buttonState;
+
     }
-  }
-  lastButtonState = currentButtonState;
-
-  if (millis() - lastMoved >= moveInterval) {
-    xLast = xPos;
-    yLast = yPos;
-
-    updatePositions();
-    
-    if ((xLast != xPos || yLast != yPos) && buttonState == true) {
-
-      matrixMap[selectedMap][xLast][yLast] = 1;
-      lc.setLed(1, xLast, yLast, matrixMap[selectedMap][xLast][yLast]);
-
-      lastPositionSetTime = millis();
-
-      exist = true;
-      xBlink = xLast;
-      yBlink = yLast;
-      buttonState = false;
+    for (int i = 0; i < lives; i++) {
+      lcd.setCursor(i, 0);  
+      lcd.write((uint8_t) 0);  
     }
-    lastMoved = millis();
-  }
-  //bomb starts blinking if it exists
-  if (exist) {
-      blinkFast(xBlink, yBlink);
+    lcd.setCursor(0,1);
+    lcd.print("Points");
+    lcd.setCursor(8, 1);
+    lcd.print(points);
+
+    boolean currentButtonState = digitalRead(pinSW);
+    if(!digitalRead(joyStickBtn)) {
+        exitGame = true;
+        }
+
+    if (currentButtonState != lastButtonState) {
+      lastButtonPressTime = millis();
     }
-    
-    if (exist && millis() - lastPositionSetTime > 3000) {
+    if ((millis() - lastButtonPressTime) > debounceDelay) {
+      if (currentButtonState == LOW) {
+        buttonState = !buttonState;
+      }
+    }
+    lastButtonState = currentButtonState;
+
+    if (millis() - lastMoved >= moveInterval) {
+      xLast = xPos;
+      yLast = yPos;
+
+      updatePositions();
       
-      matrixMap[selectedMap][xBlink][yBlink] = 0;
-      lc.setLed(1, xBlink, yBlink, matrixMap[selectedMap][xBlink][yBlink]);
+      if ((xLast != xPos || yLast != yPos) && buttonState == true) {
 
-      if (xBlink > 0) {
-        //destroy the walls
-        if(matrixMap[selectedMap][xBlink-1][yBlink] == 1){
-        points = points + 10/selectedDifficulty;
-        }
-        matrixMap[selectedMap][xBlink - 1][yBlink] = 0;
-        lc.setLed(1, xBlink - 1, yBlink, matrixMap[selectedMap][xBlink - 1][yBlink]);
+        matrixMap[selectedMap][xLast][yLast] = 1;
+        lc.setLed(1, xLast, yLast, matrixMap[selectedMap][xLast][yLast]);
 
-      //you die if you stand too close to the bomb and you go back to spawn;
-        if (xPos == xBlink - 1 && yBlink == yPos) {
-          yPos = 0;
-          xPos = 0;
-          lives--;
-          xLast = 1;
-          yLast = 1;
-          xBlink = 3;
-          xBlink = 3;
-          exist = false;
-        }
+        lastPositionSetTime = millis();
 
+        exist = true;
+        xBlink = xLast;
+        yBlink = yLast;
+        buttonState = false;
       }
+      lastMoved = millis();
+    }
+    //bomb starts blinking if it exists
+    if (exist) {
+        blinkFast(xBlink, yBlink);
+      }
+      
+      if (exist && millis() - lastPositionSetTime > 3000) {
+        
+        matrixMap[selectedMap][xBlink][yBlink] = 0;
+        lc.setLed(1, xBlink, yBlink, matrixMap[selectedMap][xBlink][yBlink]);
 
-    if (xBlink < (8 - 1)) {
-      if( matrixMap[selectedMap][xBlink + 1][yBlink] == 1){
-        points = points + 10/selectedDifficulty;
+        if (xBlink > 0) {
+          //destroy the walls
+          if(matrixMap[selectedMap][xBlink-1][yBlink] == 1){
+          points = points + 10/selectedDifficulty;
+          }
+          matrixMap[selectedMap][xBlink - 1][yBlink] = 0;
+          lc.setLed(1, xBlink - 1, yBlink, matrixMap[selectedMap][xBlink - 1][yBlink]);
 
-        }
-        matrixMap[selectedMap][xBlink + 1][yBlink] = 0;
-        lc.setLed(1, xBlink + 1, yBlink, matrixMap[selectedMap][xBlink + 1][yBlink]);
-
-        if (xPos == xBlink + 1 && yBlink == yPos) {
+        //you die if you stand too close to the bomb and you go back to spawn;
+          if (xPos == xBlink - 1 && yBlink == yPos) {
             yPos = 0;
             xPos = 0;
             lives--;
             xLast = 1;
             yLast = 1;
             xBlink = 3;
-            yBlink = 3;  
+            xBlink = 3;
+            exist = false;
+          }
+
+        }
+
+      if (xBlink < (8 - 1)) {
+        if( matrixMap[selectedMap][xBlink + 1][yBlink] == 1){
+          points = points + 10/selectedDifficulty;
+
+          }
+          matrixMap[selectedMap][xBlink + 1][yBlink] = 0;
+          lc.setLed(1, xBlink + 1, yBlink, matrixMap[selectedMap][xBlink + 1][yBlink]);
+
+          if (xPos == xBlink + 1 && yBlink == yPos) {
+              yPos = 0;
+              xPos = 0;
+              lives--;
+              xLast = 1;
+              yLast = 1;
+              xBlink = 3;
+              yBlink = 3;  
+              exist = false;
+              lcd.clear();
+          }
+      }
+
+        if (yBlink > 0) {
+        if(matrixMap[selectedMap][xBlink][yBlink - 1] == 1){
+          points = points + 10/selectedDifficulty;
+          }
+          matrixMap[selectedMap][xBlink][yBlink - 1] = 0;
+          lc.setLed(1, xBlink, yBlink - 1, matrixMap[selectedMap][xBlink][yBlink - 1]);
+
+          if (xPos == xBlink && yBlink - 1 == yPos) {
+            yPos = 0;
+            xPos = 0;
+            lives--;
+            xLast = 1;
+            yLast = 1;
+            xBlink = 3;
+            xBlink = 3;
             exist = false;
             lcd.clear();
+          }
         }
-    }
 
-      if (yBlink > 0) {
-      if(matrixMap[selectedMap][xBlink][yBlink - 1] == 1){
-        points = points + 10/selectedDifficulty;
+        if (yBlink < (8 - 1)) {
+          if(matrixMap[selectedMap][xBlink][yBlink + 1] == 1){
+          points = points + 10/selectedDifficulty;
+          }
+          matrixMap[selectedMap][xBlink][yBlink + 1] = 0;
+          lc.setLed(1, xBlink, yBlink + 1, matrixMap[selectedMap][xBlink][yBlink + 1]);
+
+          if (xPos == xBlink && yBlink + 1 == yPos) {
+            yPos = 0;
+            xPos = 0;
+            lives--;
+            xLast = 1;
+            yLast = 1;
+            xBlink = 3;
+            xBlink = 3;
+            exist = false;
+            lcd.clear();
+
+          }
         }
-        matrixMap[selectedMap][xBlink][yBlink - 1] = 0;
-        lc.setLed(1, xBlink, yBlink - 1, matrixMap[selectedMap][xBlink][yBlink - 1]);
 
-        if (xPos == xBlink && yBlink - 1 == yPos) {
-          yPos = 0;
-          xPos = 0;
-          lives--;
-          xLast = 1;
-          yLast = 1;
-          xBlink = 3;
-          xBlink = 3;
-          exist = false;
-          lcd.clear();
-        }
-      }
-
-      if (yBlink < (8 - 1)) {
-        if(matrixMap[selectedMap][xBlink][yBlink + 1] == 1){
-        points = points + 10/selectedDifficulty;
-        }
-        matrixMap[selectedMap][xBlink][yBlink + 1] = 0;
-        lc.setLed(1, xBlink, yBlink + 1, matrixMap[selectedMap][xBlink][yBlink + 1]);
-
-        if (xPos == xBlink && yBlink + 1 == yPos) {
-          yPos = 0;
-          xPos = 0;
-          lives--;
-          xLast = 1;
-          yLast = 1;
-          xBlink = 3;
-          xBlink = 3;
-          exist = false;
-          lcd.clear();
-
-        }
-      }
-
-      exist = false;
-      // playBuzzer();
-      updateMatrix();
-
-    }
-
-    if (matrixChanged) {
-      updateMatrix();
-      matrixChanged = false;
-    }
-    
-    blink(xPos, yPos);
-    if(lives == 0){
-      exitGame = true;
-      bool exitThisThing = false;
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print(F("YOU DIED"));
-        delay(1000);
-        points = 0; 
-      while (exitThisThing == false){
-        while(!digitalRead(joyStickBtn)) {
-          exitThisThing = true;
-        }
-      }
-      lcd.clear();
-           
-      }
-  if (areAllLedsOff(matrixMap[selectedMap], xPos, yPos)) {
-        selectedMap++;
-        if(selectedMap > 5){
-          selectedMap = 0;
-        }
-        EEPROM.write(3, selectedMap);
-
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print(F("YOU Win"));
-        delay(2000);
-        lcd.clear();
-        xPos = 0;
-        yPos = 0;
-        levels++;
+        exist = false;
+        // playBuzzer();
         updateMatrix();
-        if(levels == 3){
-          exitGame = true;
-        }
-
 
       }
-  
-  }
 
-  // EEPROM.write(3, selectedMap); 
-  lc.clearDisplay(0);
+      if (matrixChanged) {
+        updateMatrix();
+        matrixChanged = false;
+      }
+      
+      blink(xPos, yPos);
+      if(lives == 0){
+        exitGame = true;
+        bool exitThisThing = false;
+          lcd.clear();
+          lcd.setCursor(0, 0);
+          lcd.print(F("YOU DIED"));
+          delay(1000);
+          selectedMap++;
+          if(selectedMap > 2){
+            selectedMap = 0;
+          }
+          updateMatrix();
+          points = 0; 
+        while (exitThisThing == false){
+          while(!digitalRead(joyStickBtn)) {
+            exitThisThing = true;
+          }
+        }
+        lcd.clear();
+            
+        }
+    if (areAllLedsOff(matrixMap[selectedMap], xPos, yPos)) {
+          selectedMap++;
+          if(selectedMap > 2){
+            selectedMap = 0;
+          }
+          EEPROM.write(3, selectedMap);
+
+          lcd.clear();
+          lcd.setCursor(0, 0);
+          lcd.print(F("YOU Win"));
+          delay(2000);
+          lcd.clear();
+          xPos = 0;
+          yPos = 0;
+          levels++;
+          updateMatrix();
+          if(levels == 3){
+            exitGame = true;
+            //if you win reset all the variables so you can play again
+            levels = 0;
+            selectedMap = 0;
+            lives = selectedDifficulty;
+            points = 0;
+            updateMatrix();
+          }
+
+
+        }
+    
+    }
+
+    // EEPROM.write(3, selectedMap); 
+    lc.clearDisplay(0);
 
   
 }

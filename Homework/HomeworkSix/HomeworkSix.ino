@@ -87,11 +87,11 @@ bool matrixChanged = true;
 int xLast;
 int yLast;
 
-  boolean buttonState = false;
-  boolean exist = false;
-  int xBlink = -1;
-  int yBlink = -1;
- int lastPositionSetTime;
+boolean buttonState = false;
+boolean exist = false;
+int xBlink = -1;
+int yBlink = -1;
+int lastPositionSetTime;
 
 void setup() {
 
@@ -127,11 +127,12 @@ void loop() {
   lastButtonState = currentButtonState;
 
   if (millis() - lastMoved >= moveInterval) {
+    
     xLast = xPos;
     yLast = yPos;
     updatePositions();
 
-    if ((xLast != xPos || yLast != yPos) && buttonState == true) {
+    if ((xLast != xPos || yLast != yPos) && buttonState == true && exist == false) {
       //debuging
       // Serial.print("X: ");
       // Serial.println(xLast);
@@ -154,7 +155,7 @@ void loop() {
     blinkFast(xBlink, yBlink);
   }
   
-  if (exist && millis() - lastPositionSetTime >= 3000) {
+  if (exist && millis() - lastPositionSetTime >= 3000 && buttonState == false) {
     matrixMap[selectedMap][xBlink][yBlink] = 0;
     lc.setLed(1, xBlink, yBlink, matrixMap[selectedMap][xBlink][yBlink]);
 
@@ -166,6 +167,8 @@ void loop() {
       if (xPos == xBlink - 1 && yBlink == yPos) {
         yPos = 0;
         xPos = 0;
+        xLast =7;
+        yLast =7;
       }
     }
 
@@ -199,9 +202,9 @@ void loop() {
       }
     }
 
-    exist = false;
     playBuzzer();
     updateMatrix();
+    exist = false;
   }
 
   if (matrixChanged) {
