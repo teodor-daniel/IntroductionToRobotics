@@ -84,10 +84,8 @@ const int minThreshold = 300;
 const int maxThreshold = 600;
 const int debounceDelay = 10;
 const int menuStart = 1;
-const int menuGameOptions = 2;
-const int menuMatrixOptions = 3;
-const int menuLcdOptions = 4;
-const int menuCredits = 5;
+const int menuSettings = 2;
+const int menuCredits = 3;
 LiquidCrystal lcd(rsPin, enPin, d4Pin, d5Pin, d6Pin, d7Pin);
 int selectedDifficulty; 
 int matrixBrightness;
@@ -204,22 +202,12 @@ void updateMenu() {
     case menuStart:
       lcd.print(F(">Start"));
       lcd.setCursor(0, 1);
-      lcd.print(F(" Game options"));
+      lcd.print(F(" Settings"));
       break;
-    case menuGameOptions:
+    case menuSettings:
       lcd.print(F(" Start"));
       lcd.setCursor(0, 1);
-      lcd.print(F(">Game options"));
-      break;
-    case menuMatrixOptions:
-      lcd.print(F(">Matrix options"));
-      lcd.setCursor(0, 1);
-      lcd.print(F(" LCD options"));
-      break;
-    case menuLcdOptions:
-      lcd.print(F(" Matrix options"));
-      lcd.setCursor(0, 1);
-      lcd.print(F(">LCD options"));
+      lcd.print(F(">Settings"));
       break;
     case menuCredits:
       lcd.print(F(">CREDITS"));
@@ -234,20 +222,131 @@ void executeAction() {
       startGame();
       break;
   //Here i put handleSettings that has exit, but also has all the handles expect credtis.
-    case menuGameOptions:
-      handleGameOptions();
-      break;
-    case menuMatrixOptions:
-      handleMatrixOptions();
-      break;
-    case menuLcdOptions:
-      handleLcdOptions();
+    case menuSettings:
+      handleGameSettings();
       break;
     case menuCredits:
       showCredits();
       break;
   }
 }
+
+//Settings
+void handleGameSettings(){
+  lcd.clear();
+  subMenu = 5;
+  exitMenu = false;
+  displayGameSettings();
+  
+  while (!exitMenu) {
+    int joyValue = analogRead(xPin);
+
+    if (joyValue < minThreshold) {
+      subMenu++;
+      displayGameSettings();
+      delay(debounceDelay);
+      while (analogRead(xPin) < minThreshold);
+    }
+
+    if (joyValue > maxThreshold) {
+      subMenu--;
+      displayGameSettings();
+      delay(debounceDelay);
+      while (analogRead(xPin) > maxThreshold);
+    }
+
+    if (!digitalRead(pinSW)) {
+      executeGameSettingsAction();
+      delay(debounceDelay);
+      displayGameSettings();
+      delay(debounceDelay);
+      while (!digitalRead(pinSW));
+    }
+  }
+}
+void displayGameSettings(){
+  if (subMenu < 1) subMenu = 3;
+  if (subMenu > 3 && subMenu != 5) {
+    subMenu = 1;
+  }
+  if(subMenu > 5) subMenu = 1;
+  
+  lcd.clear();
+
+  switch (subMenu) {
+    case 1:
+      lcd.print(">Matrix");
+      lcd.setCursor(0, 1);
+      lcd.print(" LCD");
+      break;
+    case 2:
+      lcd.print(" Matrix");
+      lcd.setCursor(0, 1);
+      lcd.print(">Lcd");
+      break;
+    case 3: 
+    lcd.setCursor(0,0);
+    lcd.print(">Exit");
+  }
+}
+
+
+void executeGameSettingsAction(){
+  switch(subMenu){
+    case 1:
+      handleMatrixOptions();
+      break;
+    case 2:
+      handleLcdOptions();
+      break;
+    case 3:
+      exitMenu = true;
+      break;
+    case 5:
+      lcd.clear();
+      lcd.print("Loading...");
+      delay(400);
+      subMenu =1;
+    break;
+  }
+}
+//Matrix Options
+void handleMatrixOptions() {
+  lcd.clear();
+  subMenu = 4;
+  exitMenu = false;
+  displayMatrixOptions();
+  
+  while (!exitMenu) {
+    int joyValue = analogRead(xPin);
+
+    if (joyValue < minThreshold) {
+      subMenu++;
+      displayMatrixOptions();
+      delay(debounceDelay);
+      while (analogRead(xPin) < minThreshold);
+    }
+
+    if (joyValue > maxThreshold) {
+      subMenu--;
+      displayMatrixOptions();
+      delay(debounceDelay);
+      while (analogRead(xPin) > maxThreshold);
+    }
+
+    if (!digitalRead(pinSW)) {
+      executeMatrixMenuAction();
+      delay(debounceDelay);
+      displayMatrixOptions();
+      delay(debounceDelay);
+      while (!digitalRead(pinSW));
+    }
+  }
+}
+
+
+
+
 
 //Start game
 void startGame() {
@@ -597,40 +696,6 @@ void chooseDifficulty() {
 
     }
   delay(500); 
-}
-
-//Matrix Options
-void handleMatrixOptions() {
-  lcd.clear();
-  subMenu = 4;
-  exitMenu = false;
-  displayMatrixOptions();
-  
-  while (!exitMenu) {
-    int joyValue = analogRead(xPin);
-
-    if (joyValue < minThreshold) {
-      subMenu++;
-      displayMatrixOptions();
-      delay(debounceDelay);
-      while (analogRead(xPin) < minThreshold);
-    }
-
-    if (joyValue > maxThreshold) {
-      subMenu--;
-      displayMatrixOptions();
-      delay(debounceDelay);
-      while (analogRead(xPin) > maxThreshold);
-    }
-
-    if (!digitalRead(pinSW)) {
-      executeMatrixMenuAction();
-      delay(debounceDelay);
-      displayMatrixOptions();
-      delay(debounceDelay);
-      while (!digitalRead(pinSW));
-    }
-  }
 }
 
 void displayMatrixOptions() {
