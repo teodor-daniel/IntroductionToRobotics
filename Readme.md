@@ -78,7 +78,8 @@ This assignment focuses on creating an innovative stopwatch timer using a 7-segm
 ![FinalBuild](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkFour/FinalBuild.jpeg)
 ### ⚙️Code:
 - [SourceCode.ino](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkFour/HomeworkFour.ino)
-
+### 📹 Video:
+- [Video Presentation](https://www.youtube.com/watch?v=t60oIGi1tIM&ab_channel=Teodor-DanielBalan)
 ## 🌐🛠️📊 Homework 5
 ### 🎯Task:
 In this project, the central theme was the development of a "Smart Environment Monitor and Logger" using Arduino, featuring an Ultrasonic Sensor and an LDR (Photocell). The system has been enhanced with the incorporation of multiple thresholds, demonstrating its ability to operate effectively. Through these thresholds, the system showcases a dynamic response, providing visual feedback via an RGB LED. Additionally, user interaction is facilitated through a Serial Menu, adding a layer of versatility to the monitoring and logging capabilities.
