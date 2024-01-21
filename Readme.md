@@ -100,15 +100,3 @@ This project involved recreating the classic Bomberman arcade game. The 8x8 matr
 ### 📹 Video:
 - [Video Presentation](https://youtube.com/shorts/xtSW4jeLi24)
 
-
-## 🕹️💣🖥️ Homework 7 (WIP? might delete)
-### 🎯Task:
-This project involved recreating the classic Bomberman arcade game. I used a LCD display for the menu and for the game i used an 8x8 matrix
-### 📷Image of the Final Design:
-![FinalBuild](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkSeven/FinalBuild.jpeg)
-https://youtu.be/nt62UC3-Clo
-### ⚙️Code:
-- [SourceCode.ino](https://github.com/teodor-daniel1234/IntroductionToRobotics/blob/main/Homework/HomeworkSeven/HomeworkSeven.ino)
-### 📹 Video:
-- [Video Presentation](https://youtu.be/nt62UC3-Clo)
-
